@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "log": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    }
+  },
+  "log": {
+    "level": "tracer",
+    "out": "console",
+    "file_name": "dipper-engine.log"
+  },
+  "timeout_session": 30
+}

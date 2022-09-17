@@ -1,0 +1,6 @@
+.air.toml
+vendor
+tmp
+genproto.sh
+.env
+README.md

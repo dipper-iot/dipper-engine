@@ -1,0 +1,19 @@
+package data
+
+import (
+	"github.com/dipper-iot/dipper-engine/errors"
+	"time"
+)
+
+type InputEngine struct {
+	SessionId  uint64                 `json:"session_id"`
+	ChanId     string                 `json:"chan_id"`
+	FromEngine string                 `json:"from_engine"`
+	ToEngine   string                 `json:"to_engine"`
+	Node       *NodeRule              `json:"node"`
+	Data       map[string]interface{} `json:"data"`
+	BranchMain string                 `json:"branch_main"`
+	Type       TypeOutputEngine       `json:"type"`
+	Error      *errors.ErrorEngine    `json:"error"`
+	Time       *time.Time             `json:"time"`
+}

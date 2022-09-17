@@ -1,0 +1,75 @@
+variables:
+  SERVICE_NAME: device-log-service
+
+stages:
+  - build
+  - build-image
+  - deploy
+
+# A hack to make Golang-in-Gitlab happy
+.anchors:
+  - &inject-gopath
+      mkdir -p $(dirname ${PACKAGE_PATH})
+      && ln -s ${CI_PROJECT_DIR} ${PACKAGE_PATH}
+      && cd ${PACKAGE_PATH}
+
+build:
+  stage: build
+  image: golang:1.18-alpine
+  before_script:
+    - *inject-gopath
+  script:
+    - set -ex && apk add --no-progress --no-cache ca-certificates git curl
+    - echo "$NETRC" > $HOME/.netrc
+    - chmod 600 $HOME/.netrc
+    - go env -w GOPRIVATE=gitlab.com
+    - go get
+    - go run gitlab.com/dipper-iot/$SERVICE_NAME/kubernetes -v "$CI_COMMIT_TAG"
+    - go build -o build/$SERVICE_NAME
+  artifacts:
+    name: "vendor-$CI_PIPELINE_ID"
+    paths:
+      - vendor/
+      - build/
+      - kubernetes/
+    expire_in: 1 hour
+  only:
+    - tags
+
+build-image:
+  stage: build-image
+  dependencies:
+    - build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - *inject-gopath
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - cp build/$SERVICE_NAME ./$SERVICE_NAME
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" -t "$CI_REGISTRY_IMAGE:latest" --build-arg SHARE_NETRC="$NETRC" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+  only:
+    - tags
+
+deploy:
+  stage: deploy
+  dependencies:
+    - build
+    - build-image
+  image:
+    name: lachlanevenson/k8s-kubectl:latest
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - kubectl config set-cluster k8s --server="$KUBE_URL"
+    - kubectl config set-credentials gitlab --token="$KUBE_TOKEN"
+    - kubectl config set clusters.k8s.certificate-authority-data "$KUBE_CA_PEM"
+    - kubectl config set-context default --cluster=k8s --user=gitlab
+    - kubectl config use-context default
+    - kubectl apply -f ./kubernetes/services
+    - kubectl config delete-cluster k8s
+    - kubectl config delete-context default
+  only:
+    - tags
