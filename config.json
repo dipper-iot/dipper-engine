@@ -1,6 +1,31 @@
 {
   "rules": {
-    "log": {
+    "logger": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "arithmetic": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "fork": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "switch": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "relational": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "test": {
       "enable": true,
       "worker": 1,
       "options": {}

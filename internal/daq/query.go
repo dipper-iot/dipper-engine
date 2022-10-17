@@ -154,6 +154,39 @@ func (q *Query) Type() TypeData {
 	return String
 }
 
+func (q *Query) QueryTypeItem() (TypeData, error) {
+	if q.index > len(q.paths)-1 {
+		return 0, NotFoundPath
+	}
+	if q.Type() == Object {
+		name := q.paths[q.index]
+		data, err := q.object()
+		if err != nil {
+			return 0, err
+		}
+		n, ok := data[name]
+		if !ok {
+			return 0, NotFoundPath
+		}
+		return toType(n), nil
+	}
+
+	return toType(q.data), nil
+}
+
+func toType(data interface{}) TypeData {
+
+	v := reflect.ValueOf(data)
+	if v.CanInt() {
+		return Number
+	}
+	tMap := reflect.ValueOf(map[string]interface{}{})
+	if v.CanConvert(tMap.Type()) {
+		return Object
+	}
+	return String
+}
+
 func (q *Query) Number() (float64, error) {
 	if q.dataNumber != 0 {
 		return q.dataNumber, nil

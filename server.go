@@ -7,11 +7,15 @@ import (
 	"github.com/dipper-iot/dipper-engine/data"
 	"github.com/dipper-iot/dipper-engine/internal/util"
 	rs "github.com/dipper-iot/dipper-engine/redis"
-	"github.com/dipper-iot/dipper-engine/rules"
+	"github.com/dipper-iot/dipper-engine/rules/arithmetic"
+	"github.com/dipper-iot/dipper-engine/rules/fork"
+	log2 "github.com/dipper-iot/dipper-engine/rules/log"
+	"github.com/dipper-iot/dipper-engine/rules/relational"
+	_switch "github.com/dipper-iot/dipper-engine/rules/switch"
 	"github.com/dipper-iot/dipper-engine/store"
 	"github.com/go-redis/redis/v9"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
-	"log"
 	"os"
 	"os/signal"
 	"time"
@@ -156,8 +160,11 @@ func main() {
 			)
 
 			dipper.AddRule(
-				&rules.LogRule{},
-				&rules.ArithmeticRule{},
+				&log2.LogRule{},
+				&arithmetic.Arithmetic{},
+				&fork.ForkRule{},
+				&relational.RelationalRule{},
+				&_switch.SwitchRule{},
 			)
 
 			err = dipper.Start()

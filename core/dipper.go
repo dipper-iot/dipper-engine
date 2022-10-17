@@ -57,7 +57,7 @@ func (d *DipperEngine) LoadRulePlugin() {
 
 }
 
-func (d DipperEngine) AddRule(rules ...Rule) {
+func (d *DipperEngine) AddRule(rules ...Rule) {
 	for _, rule := range rules {
 		if rule != nil {
 			d.addRule(rule)
@@ -65,7 +65,7 @@ func (d DipperEngine) AddRule(rules ...Rule) {
 	}
 }
 
-func (d DipperEngine) addRule(rule Rule) {
+func (d *DipperEngine) addRule(rule Rule) {
 	log.Tracef("Add Rule: %s", rule.Id())
 	d.mapRule[rule.Id()] = rule
 
@@ -74,13 +74,13 @@ func (d DipperEngine) addRule(rule Rule) {
 	d.mapQueueInputRule[rule.Id()] = queue
 }
 
-func (d DipperEngine) Add(ctx context.Context, sessionData *data.Session) error {
+func (d *DipperEngine) Add(ctx context.Context, sessionData *data.Session) error {
 	sessionInfo := data.NewSessionInfo(time.Duration(d.config.TimeoutSession), sessionData)
 	d.store.Add(sessionInfo)
 	return d.startSession(ctx, sessionInfo.Id)
 }
 
-func (d DipperEngine) SessionFromQueue(factoryQueueName FactoryQueueName[*data.Session]) {
+func (d *DipperEngine) SessionFromQueue(factoryQueueName FactoryQueueName[*data.Session]) {
 	defaultTopic := "session-input"
 	topic, ok := d.config.BusMap[defaultTopic]
 	if !ok {
@@ -99,7 +99,7 @@ func (d DipperEngine) SessionFromQueue(factoryQueueName FactoryQueueName[*data.S
 	})
 }
 
-func (d DipperEngine) Start() error {
+func (d *DipperEngine) Start() error {
 	log.Debug("Start Dipper Engine")
 	d.queueOutputRule = d.factoryQueueOutput("output")
 
@@ -124,22 +124,22 @@ func (d DipperEngine) Start() error {
 		option, ok := d.config.Rules[name]
 		if ok && option.Enable {
 			for i := 0; i < option.Worker; i++ {
-				go rule.Run(d.ctx, queueInput.Subscribe, d.queueOutputRule.Pushlish)
+				go rule.Run(d.ctx, queueInput.Subscribe, d.queueOutputRule.Publish)
 			}
 		}
 	}
 
-	d.registerOutput()
+	go d.registerOutput()
 
 	return nil
 }
 
-func (d DipperEngine) Stop() error {
+func (d *DipperEngine) Stop() error {
 	d.cancel()
 	return nil
 }
 
-func (d DipperEngine) RuleEnable() []string {
+func (d *DipperEngine) RuleEnable() []string {
 	list := make([]string, 0)
 	for name, option := range d.config.Rules {
 		if option.Enable {

@@ -10,20 +10,14 @@ type NodeRule struct {
 	NodeId string
 	RuleId string
 	Option map[string]interface{}
-	Link   []*NodeLink
 	Debug  bool
 	End    bool
-}
-
-type NodeLink struct {
-	LinkTo string
-	Type   TypeOutputEngine
 }
 
 type Session struct {
 	ChanId   string
 	MapNode  map[string]*NodeRule
-	RootNode *NodeRule
+	RootNode string
 	Data     map[string]interface{}
 	Result   map[string]*OutputEngine
 }
@@ -68,7 +62,7 @@ func NewSessionInfo(timeout time.Duration, data *Session) *Info {
 		ChanId:   data.ChanId,
 		Timeout:  timeout,
 		MapNode:  data.MapNode,
-		RootNode: data.RootNode,
+		RootNode: data.MapNode[data.RootNode],
 		Data:     data.Data,
 	}
 }

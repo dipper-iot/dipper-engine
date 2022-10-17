@@ -3,11 +3,12 @@ package errors
 import "fmt"
 
 type ErrorEngine struct {
-	Id         string
-	RequestId  string
-	FromEngine string
-	Message    string
-	Code       int
+	Id          string
+	SessionId   uint64
+	FromEngine  string
+	Message     string
+	ErrorDetail error
+	Code        int
 }
 
 func (e ErrorEngine) Error() string {

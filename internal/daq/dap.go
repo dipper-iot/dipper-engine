@@ -10,6 +10,10 @@ func NewDaq(data map[string]interface{}) *Daq {
 	}
 }
 
+func (d Daq) Data() map[string]interface{} {
+	return d.data
+}
+
 func (d Daq) Update(location string, data interface{}) error {
 	q, err := d.Query(location)
 	if err != nil {

@@ -43,7 +43,7 @@ func (r redisQueue[T]) Name() string {
 	return r.name
 }
 
-func (r redisQueue[T]) Pushlish(ctx context.Context, input T) error {
+func (r redisQueue[T]) Publish(ctx context.Context, input T) error {
 	data, err := util.ConvertToByte(input)
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func (r redisQueue[T]) Subscribe(ctx context.Context, callback queue.SubscribeFu
 					go func() {
 						// try 3 times
 						for i := 0; i < 3; i++ {
-							err := r.Pushlish(ctx, dataQueue)
+							err := r.Publish(ctx, dataQueue)
 							if err != nil {
 								log.Error(err)
 								continue

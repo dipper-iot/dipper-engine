@@ -10,21 +10,23 @@ type defaultQueue[T any] struct {
 	queue chan T
 }
 
-func (d defaultQueue[T]) Name() string {
+func (d *defaultQueue[T]) Name() string {
 	return d.name
 }
 
-func (d defaultQueue[T]) Pushlish(ctx context.Context, input T) error {
-	d.queue <- input
+func (d *defaultQueue[T]) Publish(ctx context.Context, input T) error {
+	go func(input T) {
+		d.queue <- input
+	}(input)
 	return nil
 }
 
-func (d defaultQueue[T]) Subscribe(ctx context.Context, callback SubscribeFunction[T]) error {
+func (d *defaultQueue[T]) Subscribe(ctx context.Context, callback SubscribeFunction[T]) error {
 	go d.loopData(ctx, callback)
 	return nil
 }
 
-func (d defaultQueue[T]) loopData(ctx context.Context, callback SubscribeFunction[T]) {
+func (d *defaultQueue[T]) loopData(ctx context.Context, callback SubscribeFunction[T]) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -38,7 +40,9 @@ func (d defaultQueue[T]) loopData(ctx context.Context, callback SubscribeFunctio
 				nil,
 				nil,
 			))
+			break
 		}
+
 	}
 }
 

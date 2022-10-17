@@ -7,14 +7,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (d DipperEngine) startSession(ctx context.Context, sessionId uint64) error {
+func (d *DipperEngine) startSession(ctx context.Context, sessionId uint64) error {
 	if d.store.Has(sessionId) {
 		sessionInfo := d.store.Get(sessionId)
 		if sessionInfo.RootNode != nil {
 			node := sessionInfo.RootNode
 			ruleQueue, ok := d.mapQueueInputRule[node.RuleId]
 			if ok {
-				err := ruleQueue.Pushlish(ctx, &data.InputEngine{
+				err := ruleQueue.Publish(ctx, &data.InputEngine{
 					SessionId:  sessionInfo.Id,
 					ChanId:     sessionInfo.ChanId,
 					FromEngine: node.NodeId,
@@ -36,9 +36,9 @@ func (d DipperEngine) startSession(ctx context.Context, sessionId uint64) error 
 	return nil
 }
 
-func (d DipperEngine) registerOutput() {
+func (d *DipperEngine) registerOutput() {
 
-	d.queueOutputRule.Subscribe(d.ctx, func(deliver *queue.Deliver[*data.OutputEngine]) {
+	err := d.queueOutputRule.Subscribe(d.ctx, func(deliver *queue.Deliver[*data.OutputEngine]) {
 
 		err := d.handlerOutput(deliver.Context, deliver.Data)
 		if err != nil {
@@ -49,9 +49,12 @@ func (d DipperEngine) registerOutput() {
 
 		deliver.Ack()
 	})
+	if err != nil {
+		log.Error(err)
+	}
 }
 
-func (d DipperEngine) pushlishBus(name string, dataOutput interface{}) {
+func (d *DipperEngine) publishBus(name string, dataOutput interface{}) {
 	topic, ok := d.config.BusMap[name]
 	if !ok {
 		topic = name
@@ -59,14 +62,14 @@ func (d DipperEngine) pushlishBus(name string, dataOutput interface{}) {
 	d.bus.Pushlish(context.TODO(), topic, dataOutput)
 }
 
-func (d DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.OutputEngine) error {
+func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.OutputEngine) error {
 
 	if dataOutput.Debug {
-		d.pushlishBus("debug-output", dataOutput)
-		return nil
+		d.publishBus("debug-output", dataOutput)
+		//return nil
 	}
 
-	if d.store.Has(dataOutput.SessionId) {
+	if !d.store.Has(dataOutput.SessionId) {
 		return nil
 	}
 
@@ -74,7 +77,7 @@ func (d DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Output
 		// finish
 		session, success := d.store.Done(dataOutput.SessionId, dataOutput)
 		if success {
-			d.pushlishBus("session-finish", session)
+			d.publishBus("session-finish", session)
 		}
 		return nil
 	}
@@ -87,7 +90,7 @@ func (d DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Output
 			if ok {
 				ruleQueue, ok := d.mapQueueInputRule[node.RuleId]
 				if ok {
-					err := ruleQueue.Pushlish(ctx, &data.InputEngine{
+					err := ruleQueue.Publish(ctx, &data.InputEngine{
 						SessionId:  sessionInfo.Id,
 						ChanId:     sessionInfo.ChanId,
 						FromEngine: node.NodeId,

@@ -47,6 +47,6 @@ func (d Deliver[T]) Reject() {
 
 type QueueEngine[T any] interface {
 	Name() string
-	Pushlish(ctx context.Context, input T) error
+	Publish(ctx context.Context, input T) error
 	Subscribe(ctx context.Context, callback SubscribeFunction[T]) error
 }
