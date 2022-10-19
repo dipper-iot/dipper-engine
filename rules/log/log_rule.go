@@ -12,7 +12,7 @@ type LogRule struct {
 }
 
 func (l LogRule) Id() string {
-	return "logger"
+	return "log-core"
 }
 
 func (l LogRule) Initialize(ctx context.Context, option map[string]interface{}) error {

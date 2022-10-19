@@ -1,6 +1,6 @@
 {
   "rules": {
-    "logger": {
+    "log-core": {
       "enable": true,
       "worker": 1,
       "options": {}
