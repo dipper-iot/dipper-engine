@@ -8,6 +8,33 @@ $ go build
 
 ## Run
 ```shell
+$ dipper-engine -h
+
+NAME:
+   Dipper Engine - Rule Engine
+
+USAGE:
+   Dipper Engine [global options] command [command options] [arguments...]
+
+COMMANDS:
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --bus value, -b value       Bus type: [chan, redis] (default: "chan")
+   --config value, -c value    Config file (default: "config.json")
+   --help, -h                  show help (default: false)
+   --plugin, -p                Load Plugin (default: false)
+   --queue value, -q value     Queue type: [chan, redis] (default: "chan")
+   --redis-host value          Redis host (default: "127.0.0.1:6379")
+   --redis-pass value          Redis pass
+   --redis-timeout value       Redis Time out
+   --session-from-queue, --sq  Session from queue (default: false)
+   --store value, -s value     Store type: [memory, redis] (default: "memory")
+
+
+```
+
+```shell
 $ dipper-engine
 
 Start Dipper Engine
