@@ -3,7 +3,7 @@ package daq
 import "errors"
 
 var (
-	NotFoundPath         = errors.New("NotFoundPath")
+	NotFoundPath         = "NotFoundPath"
 	NotConvertTypeNumber = errors.New("NotConvertTypeNumber")
 	NotConvertTypeString = errors.New("NotConvertTypeString")
 	NotConvertTypeArray  = errors.New("NotConvertTypeArray")
