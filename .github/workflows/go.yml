@@ -26,8 +26,8 @@ jobs:
         go test -v ./... -covermode=count -coverprofile=coverage.out
         go tool cover -func=coverage.out -o=coverage.out
 
-    - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
-      uses: tj-actions/coverage-badge-go@v2
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
       with:
-        filename: coverage.out
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
