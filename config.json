@@ -1,0 +1,38 @@
+{
+  "rules": {
+    "log-core": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "arithmetic": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "fork": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "switch": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "conditional": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    }
+  },
+  "log": {
+    "level": "tracer",
+    "out": "console",
+    "file_name": "dipper-engine.log"
+  },
+  "timeout_session": 30,
+  "plugins": [
+    "/plugins/redis.so"
+  ]
+}
