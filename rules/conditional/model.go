@@ -30,7 +30,7 @@ type LeafNode struct {
 	Right    *LeafNode `json:"right"`
 	Type     DataType  `json:"type"`
 	Operator Operator  `json:"operator"`
-	Value    string    `json:"data"`
+	Value    string    `json:"value"`
 }
 
 type Option struct {

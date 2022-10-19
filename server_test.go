@@ -77,7 +77,7 @@ func Test_Run(t *testing.T) {
 		RootNode: "1",
 		MapNode: map[string]*data.NodeRule{
 			"1": {
-				Debug: true,
+				Debug: false,
 				Option: map[string]interface{}{
 					"list": map[string]interface{}{
 						"default.c": map[string]interface{}{
@@ -95,17 +95,14 @@ func Test_Run(t *testing.T) {
 					},
 					"next_error":   "2",
 					"next_success": "3",
-					"debug":        true,
 				},
 				NodeId: "4",
 				RuleId: "arithmetic",
 				End:    false,
 			},
 			"2": {
-				Debug: true,
-				Option: map[string]interface{}{
-					"debug": true,
-				},
+				Debug:  false,
+				Option: map[string]interface{}{},
 				NodeId: "2",
 				RuleId: "logger",
 				End:    true,
@@ -114,17 +111,14 @@ func Test_Run(t *testing.T) {
 				Debug: true,
 				Option: map[string]interface{}{
 					"next_success": []string{"5", "2"},
-					"debug":        true,
 				},
 				NodeId: "3",
 				RuleId: "fork",
 				End:    false,
 			},
 			"4": {
-				Debug: true,
-				Option: map[string]interface{}{
-					"debug": true,
-				},
+				Debug:  false,
+				Option: map[string]interface{}{},
 				NodeId: "4",
 				RuleId: "test",
 				End:    true,
@@ -141,14 +135,13 @@ func Test_Run(t *testing.T) {
 							"type":  "val",
 							"value": "default.b",
 						},
-						"operator": "==",
+						"operator": "<>",
 						"type":     "operator",
 					},
 					"set_param_result_to": "default.cond_a_b",
 					"next_error":          "4",
-					"next_true":           "3",
+					"next_true":           "4",
 					"next_false":          "4",
-					"debug":               true,
 				},
 				NodeId: "3",
 				RuleId: "conditional",

@@ -1,7 +1,9 @@
 package daq
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 )
 
 type CallUpdate = func(index int, data interface{}) error
@@ -35,7 +37,7 @@ func (q *Query) getDataIndex(index int) (*Query, error) {
 	case String:
 	case Array:
 		{
-			return q, NotFoundPath
+			return q, fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
 		}
 	default:
 
@@ -67,7 +69,7 @@ func (q *Query) getDataIndex(index int) (*Query, error) {
 	}
 	newData, ok := dataObject[path]
 	if !ok {
-		return q, NotFoundPath
+		return q, fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
 	}
 
 	nextQuery := NewQuery(
@@ -156,7 +158,7 @@ func (q *Query) Type() TypeData {
 
 func (q *Query) QueryTypeItem() (TypeData, error) {
 	if q.index > len(q.paths)-1 {
-		return 0, NotFoundPath
+		return 0, fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
 	}
 	if q.Type() == Object {
 		name := q.paths[q.index]
@@ -166,7 +168,7 @@ func (q *Query) QueryTypeItem() (TypeData, error) {
 		}
 		n, ok := data[name]
 		if !ok {
-			return 0, NotFoundPath
+			return 0, fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
 		}
 		return toType(n), nil
 	}
@@ -192,7 +194,7 @@ func (q *Query) Number() (float64, error) {
 		return q.dataNumber, nil
 	}
 	if q.index > len(q.paths)-1 {
-		return 0, NotFoundPath
+		return 0, fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
 	}
 	if q.Type() == Object {
 
@@ -203,7 +205,7 @@ func (q *Query) Number() (float64, error) {
 		}
 		n, ok := data[name]
 		if !ok {
-			return 0, NotFoundPath
+			return 0, fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
 		}
 		v := reflect.ValueOf(n)
 		if v.CanInt() {
