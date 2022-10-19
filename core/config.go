@@ -11,6 +11,7 @@ type ConfigEngine struct {
 	Rules          map[string]*RuleOption `json:"rules"`
 	TimeoutSession int                    `json:"timeout_session"`
 	Log            ConfigLog              `json:"log"`
+	Plugins        []string               `json:"plugins"`
 }
 
 type ConfigLog struct {

@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"github.com/dipper-iot/dipper-engine/data"
+	"github.com/dipper-iot/dipper-engine/internal/debug"
 	"github.com/dipper-iot/dipper-engine/queue"
 	log "github.com/sirupsen/logrus"
 )
@@ -65,6 +66,7 @@ func (d *DipperEngine) publishBus(name string, dataOutput interface{}) {
 func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.OutputEngine) error {
 
 	if dataOutput.Debug {
+		debug.PrintJson(dataOutput, "Debug-output => ChanId: %s | Form: %s ", dataOutput.ChanId, dataOutput.FromEngine)
 		d.publishBus("debug-output", dataOutput)
 		//return nil
 	}
@@ -88,12 +90,13 @@ func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Outpu
 		for _, nextId := range dataOutput.Next {
 			node, ok := sessionInfo.MapNode[nextId]
 			if ok {
+				node.Option["debug"] = node.Debug
 				ruleQueue, ok := d.mapQueueInputRule[node.RuleId]
 				if ok {
 					err := ruleQueue.Publish(ctx, &data.InputEngine{
 						SessionId:  sessionInfo.Id,
 						ChanId:     sessionInfo.ChanId,
-						FromEngine: node.NodeId,
+						FromEngine: node.RuleId,
 						ToEngine:   dataOutput.FromEngine,
 						Node:       node,
 						Data:       dataOutput.Data,

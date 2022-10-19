@@ -9,9 +9,9 @@ import (
 	"github.com/dipper-iot/dipper-engine/internal/util"
 	"github.com/dipper-iot/dipper-engine/queue"
 	"github.com/dipper-iot/dipper-engine/rules/arithmetic"
+	"github.com/dipper-iot/dipper-engine/rules/conditional"
 	"github.com/dipper-iot/dipper-engine/rules/fork"
 	log2 "github.com/dipper-iot/dipper-engine/rules/log"
-	"github.com/dipper-iot/dipper-engine/rules/relational"
 	_switch "github.com/dipper-iot/dipper-engine/rules/switch"
 	"github.com/dipper-iot/dipper-engine/store"
 	"log"
@@ -27,7 +27,7 @@ func Test_Run(t *testing.T) {
 		busData          bus.Bus
 		config           core.ConfigEngine
 	)
-	err := util.ReadFile(&config, "config.json")
+	err := util.ReadFile(&config, "config.test.json")
 	if err != nil {
 		log.Println(err)
 		return
@@ -53,7 +53,7 @@ func Test_Run(t *testing.T) {
 		&log2.LogRule{},
 		&arithmetic.Arithmetic{},
 		&fork.ForkRule{},
-		&relational.RelationalRule{},
+		&conditional.ConditionalRule{},
 		&_switch.SwitchRule{},
 		&LogTest{
 			&wg,
@@ -95,15 +95,17 @@ func Test_Run(t *testing.T) {
 					},
 					"next_error":   "2",
 					"next_success": "3",
-					"debug":        false,
+					"debug":        true,
 				},
-				NodeId: "1",
+				NodeId: "4",
 				RuleId: "arithmetic",
 				End:    false,
 			},
 			"2": {
-				Debug:  true,
-				Option: map[string]interface{}{},
+				Debug: true,
+				Option: map[string]interface{}{
+					"debug": true,
+				},
 				NodeId: "2",
 				RuleId: "logger",
 				End:    true,
@@ -111,7 +113,7 @@ func Test_Run(t *testing.T) {
 			"3": {
 				Debug: true,
 				Option: map[string]interface{}{
-					"next_success": []string{"4", "2"},
+					"next_success": []string{"5", "2"},
 					"debug":        true,
 				},
 				NodeId: "3",
@@ -119,11 +121,38 @@ func Test_Run(t *testing.T) {
 				End:    false,
 			},
 			"4": {
-				Debug:  true,
-				Option: map[string]interface{}{},
+				Debug: true,
+				Option: map[string]interface{}{
+					"debug": true,
+				},
 				NodeId: "4",
 				RuleId: "test",
 				End:    true,
+			},
+			"5": {
+				Debug: true,
+				Option: map[string]interface{}{
+					"operator": map[string]interface{}{
+						"right": map[string]interface{}{
+							"value": "default.a",
+							"type":  "val",
+						},
+						"left": map[string]interface{}{
+							"type":  "val",
+							"value": "default.b",
+						},
+						"operator": "==",
+						"type":     "operator",
+					},
+					"set_param_result_to": "default.cond_a_b",
+					"next_error":          "4",
+					"next_true":           "3",
+					"next_false":          "4",
+					"debug":               true,
+				},
+				NodeId: "3",
+				RuleId: "conditional",
+				End:    false,
 			},
 		},
 	})
@@ -155,7 +184,7 @@ func (l *LogTest) Run(ctx context.Context, subscribeQueueInput func(ctx context.
 			log.Println(err)
 			return
 		}
-		log.Println(string(dataByte))
+		log.Println(deliver.Data.ToEngine, "=>", deliver.Data.FromEngine, ":", deliver.Data.Type, string(dataByte))
 		l.wg.Done()
 	})
 	if err != nil {

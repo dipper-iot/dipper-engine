@@ -24,6 +24,11 @@
       "enable": true,
       "worker": 1,
       "options": {}
+    },
+    "test": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
     }
   },
   "log": {

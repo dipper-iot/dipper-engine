@@ -1,6 +1,8 @@
-package relational
+package conditional
 
-import "github.com/dipper-iot/dipper-engine/internal/daq"
+import (
+	"github.com/dipper-iot/dipper-engine/core/daq"
+)
 
 type DataType string
 type Operator string

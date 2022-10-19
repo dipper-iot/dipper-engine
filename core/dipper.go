@@ -2,12 +2,15 @@ package core
 
 import (
 	"context"
+	"fmt"
 	bus2 "github.com/dipper-iot/dipper-engine/bus"
 	"github.com/dipper-iot/dipper-engine/data"
 	"github.com/dipper-iot/dipper-engine/errors"
 	"github.com/dipper-iot/dipper-engine/queue"
 	"github.com/dipper-iot/dipper-engine/store"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"text/tabwriter"
 	"time"
 )
 
@@ -46,15 +49,14 @@ func NewDipperEngine(
 	}
 }
 
-func (d *DipperEngine) WithContext(ctx context.Context) *DipperEngine {
+func (d *DipperEngine) SetConfig(conf *ConfigEngine) {
+	d.config = conf
+}
+
+func (d *DipperEngine) SetContext(ctx context.Context) {
 	ctx, cancel := context.WithCancel(ctx)
 	d.ctx = ctx
 	d.cancel = cancel
-	return d
-}
-
-func (d *DipperEngine) LoadRulePlugin() {
-
 }
 
 func (d *DipperEngine) AddRule(rules ...Rule) {
@@ -115,6 +117,12 @@ func (d *DipperEngine) Start() error {
 
 	}
 
+	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
+
+	fmt.Println(fmt.Sprintf("Rules: %d", len(d.mapRule)))
+	fmt.Println("-----------------------------------------------------------")
+	fmt.Fprintln(w, "No\tRule Name\tWorker\tStatus\t")
+	index := 1
 	// Run Rule
 	for name, rule := range d.mapRule {
 		queueInput, ok := d.mapQueueInputRule[name]
@@ -126,10 +134,17 @@ func (d *DipperEngine) Start() error {
 			for i := 0; i < option.Worker; i++ {
 				go rule.Run(d.ctx, queueInput.Subscribe, d.queueOutputRule.Publish)
 			}
+			fmt.Fprintln(w, fmt.Sprintf("%d\t%s\t%d\t%s\t", index, name, option.Worker, "enable"))
+		} else {
+			fmt.Fprintln(w, fmt.Sprintf("%d\t%s\t%d\t%s\t", index, name, 0, "disable"))
 		}
+		index++
 	}
-
+	w.Flush()
+	fmt.Println("-----------------------------------------------------------")
+	fmt.Println()
 	go d.registerOutput()
+	fmt.Println("Running Engine...")
 
 	return nil
 }

@@ -12,5 +12,5 @@ type ErrorEngine struct {
 }
 
 func (e ErrorEngine) Error() string {
-	return fmt.Sprintf("%v", e)
+	return fmt.Sprintf("%s", e.Message)
 }

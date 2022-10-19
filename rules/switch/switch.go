@@ -2,7 +2,7 @@ package _switch
 
 import (
 	"fmt"
-	"github.com/dipper-iot/dipper-engine/internal/daq"
+	"github.com/dipper-iot/dipper-engine/core/daq"
 	"reflect"
 )
 

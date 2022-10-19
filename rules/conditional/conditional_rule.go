@@ -1,27 +1,26 @@
-package relational
+package conditional
 
 import (
 	"context"
 	"github.com/dipper-iot/dipper-engine/data"
 	"github.com/dipper-iot/dipper-engine/errors"
-	"github.com/dipper-iot/dipper-engine/internal/util"
 	"github.com/dipper-iot/dipper-engine/queue"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
 
-type RelationalRule struct {
+type ConditionalRule struct {
 }
 
-func (a RelationalRule) Id() string {
-	return "relational"
+func (a ConditionalRule) Id() string {
+	return "conditional"
 }
 
-func (a RelationalRule) Initialize(ctx context.Context, options map[string]interface{}) error {
+func (a ConditionalRule) Initialize(ctx context.Context, options map[string]interface{}) error {
 	return nil
 }
 
-func (a RelationalRule) Run(ctx context.Context, subscribeQueueInput func(ctx context.Context, callback queue.SubscribeFunction[*data.InputEngine]) error, pushQueueOutput func(ctx context.Context, input *data.OutputEngine) error) {
+func (a ConditionalRule) Run(ctx context.Context, subscribeQueueInput func(ctx context.Context, callback queue.SubscribeFunction[*data.InputEngine]) error, pushQueueOutput func(ctx context.Context, input *data.OutputEngine) error) {
 
 	err := subscribeQueueInput(ctx, func(deliver *queue.Deliver[*data.InputEngine]) {
 		output, err := a.handlerInput(deliver.Context, deliver.Data)
@@ -47,16 +46,16 @@ func (a RelationalRule) Run(ctx context.Context, subscribeQueueInput func(ctx co
 
 }
 
-func (a RelationalRule) Stop(ctx context.Context) error {
+func (a ConditionalRule) Stop(ctx context.Context) error {
 	return nil
 }
 
-func (a RelationalRule) handlerInput(ctx context.Context, input *data.InputEngine) (output *data.OutputEngine, errOutput error) {
+func (a ConditionalRule) handlerInput(ctx context.Context, input *data.InputEngine) (output *data.OutputEngine, errOutput error) {
 
 	output = a.createOutput(input)
 	var option Option
 
-	err := util.MapToStruct(input.Node.Option, &option)
+	err := data.MapToStruct(input.Node.Option, &option)
 	if err != nil {
 		log.Error(err)
 
@@ -75,7 +74,7 @@ func (a RelationalRule) handlerInput(ctx context.Context, input *data.InputEngin
 	output.Next = []string{option.NextError}
 	output.Debug = option.Debug
 
-	mathRunner := NewRelational(input.BranchMain, input.Data)
+	mathRunner := NewConditional(input.BranchMain, input.Data)
 
 	var result bool
 	result, err = mathRunner.Run(option.Operator, option.SetParamResultTo)
@@ -105,7 +104,7 @@ func (a RelationalRule) handlerInput(ctx context.Context, input *data.InputEngin
 	return
 }
 
-func (a RelationalRule) createOutput(input *data.InputEngine) (output *data.OutputEngine) {
+func (a ConditionalRule) createOutput(input *data.InputEngine) (output *data.OutputEngine) {
 
 	timeData := time.Now()
 

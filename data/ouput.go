@@ -24,3 +24,7 @@ type OutputEngine struct {
 	Error      *errors.ErrorEngine    `json:"error"`
 	Debug      bool
 }
+
+func (o OutputEngine) String() {
+
+}

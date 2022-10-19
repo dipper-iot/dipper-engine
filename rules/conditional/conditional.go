@@ -1,24 +1,24 @@
-package relational
+package conditional
 
 import (
 	"fmt"
-	"github.com/dipper-iot/dipper-engine/internal/daq"
+	"github.com/dipper-iot/dipper-engine/core/daq"
 	"strconv"
 )
 
-type Relational struct {
+type Conditional struct {
 	mainBranch string
 	dataQuery  *daq.Daq
 }
 
-func NewRelational(mainBranch string, dataQuery map[string]interface{}) *Relational {
-	return &Relational{
+func NewConditional(mainBranch string, dataQuery map[string]interface{}) *Conditional {
+	return &Conditional{
 		mainBranch: mainBranch,
 		dataQuery:  daq.NewDaq(dataQuery),
 	}
 }
 
-func (r Relational) Run(leafNode *LeafNode, setResultTo string) (res bool, err error) {
+func (r Conditional) Run(leafNode *LeafNode, setResultTo string) (res bool, err error) {
 
 	result, err := r.compare(leafNode)
 	if err != nil {
@@ -40,7 +40,7 @@ func (r Relational) Run(leafNode *LeafNode, setResultTo string) (res bool, err e
 	return result.Result, err
 }
 
-func (r Relational) compare(leafNode *LeafNode) (result *Result, err error) {
+func (r Conditional) compare(leafNode *LeafNode) (result *Result, err error) {
 	if leafNode.Type == NoneType && leafNode.Left == nil && leafNode.Right == nil {
 		return
 	}
@@ -131,11 +131,11 @@ func (r Relational) compare(leafNode *LeafNode) (result *Result, err error) {
 	return
 }
 
-func (r Relational) Data() map[string]interface{} {
+func (r Conditional) Data() map[string]interface{} {
 	return r.dataQuery.Data()
 }
 
-func (r Relational) getCompareResult(left, right *Result) (result *ResultCompare, err error) {
+func (r Conditional) getCompareResult(left, right *Result) (result *ResultCompare, err error) {
 	result = &ResultCompare{
 		IsString: left.Type == daq.String,
 	}
@@ -168,7 +168,7 @@ func (r Relational) getCompareResult(left, right *Result) (result *ResultCompare
 	return
 }
 
-func (r Relational) getResult(data *ResultCompare, operator Operator) (result bool, err error) {
+func (r Conditional) getResult(data *ResultCompare, operator Operator) (result bool, err error) {
 	if data.IsString {
 		switch operator {
 		case Equal:
@@ -227,7 +227,7 @@ func (r Relational) getResult(data *ResultCompare, operator Operator) (result bo
 	return
 }
 
-func (r Relational) getResultLogic(data *ResultCompare, operator Operator) (result bool, err error) {
+func (r Conditional) getResultLogic(data *ResultCompare, operator Operator) (result bool, err error) {
 	if data.IsResult {
 		switch operator {
 		case And:

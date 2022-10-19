@@ -1,11 +1,11 @@
-package relational
+package conditional
 
 import (
 	"testing"
 )
 
-func TestRelational_Run(t *testing.T) {
-	m := NewRelational("default", map[string]interface{}{
+func TestConditional_Run(t *testing.T) {
+	m := NewConditional("default", map[string]interface{}{
 		"default": map[string]interface{}{
 			"a": 2,
 			"b": 2,

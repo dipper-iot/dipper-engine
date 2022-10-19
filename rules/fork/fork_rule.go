@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/dipper-iot/dipper-engine/data"
 	"github.com/dipper-iot/dipper-engine/errors"
-	"github.com/dipper-iot/dipper-engine/internal/util"
 	"github.com/dipper-iot/dipper-engine/queue"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -58,7 +57,7 @@ func (f ForkRule) handlerInput(ctx context.Context, input *data.InputEngine) (ou
 	output.Type = data.TypeOutputEngineError
 	var option Option
 
-	err := util.MapToStruct(input.Node.Option, &option)
+	err := data.MapToStruct(input.Node.Option, &option)
 	if err != nil {
 		log.Error(err)
 
