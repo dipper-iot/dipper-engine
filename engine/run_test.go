@@ -219,6 +219,73 @@ func TestApp_Run(t *testing.T) {
 
 func Test_Run_Default(t *testing.T) {
 	e := New()
+	e.flags = []cli.Flag{
+		&cli.BoolFlag{
+			Name: "test.v",
+		},
+		&cli.BoolFlag{
+			Name: "test.paniconexit0",
+		},
+		&cli.BoolFlag{
+			Name: "test.run",
+		},
+		&cli.StringFlag{
+			Name:    "config",
+			Usage:   "Config file",
+			Value:   "../config.test.json",
+			Aliases: []string{"c"},
+		},
+		&cli.BoolFlag{
+			Name:    "plugin",
+			Usage:   "Load Plugin",
+			Value:   false,
+			Aliases: []string{"p"},
+		},
+		&cli.BoolFlag{
+			Name:    "session-input-queue",
+			Usage:   "Session input queue",
+			Value:   false,
+			Aliases: []string{"iq"},
+		},
+		&cli.BoolFlag{
+			Name:    "session-output-queue",
+			Usage:   "Session output queue",
+			Value:   false,
+			Aliases: []string{"oq"},
+		},
+		&cli.StringFlag{
+			Name:    "bus",
+			Usage:   "Bus type: [chan, redis]",
+			Value:   "chan",
+			Aliases: []string{"b"},
+		},
+		&cli.StringFlag{
+			Name:    "queue",
+			Usage:   "Queue type: [chan, redis]",
+			Value:   "chan",
+			Aliases: []string{"q"},
+		},
+		&cli.StringFlag{
+			Name:    "store",
+			Usage:   "Store type: [memory, redis]",
+			Value:   "memory",
+			Aliases: []string{"s"},
+		},
+		&cli.StringFlag{
+			Name:  "redis-host",
+			Usage: "Redis host",
+			Value: "127.0.0.1:6379",
+		},
+		&cli.StringFlag{
+			Name:  "redis-pass",
+			Usage: "Redis pass",
+		},
+		&cli.StringFlag{
+			Name:  "redis-timeout",
+			Usage: "Redis Time out",
+		},
+	}
+
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
