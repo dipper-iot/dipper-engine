@@ -1,5 +1,5 @@
 # Rule Engine Golang
-[![Go](https://github.com/dipper-iot/dipper-engine/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/dipper-iot/dipper-engine/actions/workflows/go.yml) [![CodeQL](https://github.com/dipper-iot/dipper-engine/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/dipper-iot/dipper-engine/actions/workflows/codeql.yml)
+[![Go](https://github.com/dipper-iot/dipper-engine/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/dipper-iot/dipper-engine/actions/workflows/go.yml) [![CodeQL](https://github.com/dipper-iot/dipper-engine/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/dipper-iot/dipper-engine/actions/workflows/codeql.yml) [![Coverage Status](https://coveralls.io/repos/github/dipper-iot/dipper-engine/badge.svg?branch=main)](https://coveralls.io/github/dipper-iot/dipper-engine?branch=main)
 ## Setup
 
 ```shell
