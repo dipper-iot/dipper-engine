@@ -215,7 +215,6 @@ func Test_Run_Redis(t *testing.T) {
 	err = client.Ping(context.TODO()).Err()
 	if err != nil {
 		log.Println(err)
-		t.Error(err)
 		return
 	}
 

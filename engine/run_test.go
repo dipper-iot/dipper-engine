@@ -172,6 +172,9 @@ func TestApp_Run(t *testing.T) {
 			return err
 		}
 
+		if e.clientRedis == nil {
+			return nil
+		}
 		err = e.clientRedis.RPush(context.Background(), "dipper-queue-session-input", dataBye).Err()
 		if err != nil {
 			log.Error(err)
