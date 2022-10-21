@@ -8,6 +8,7 @@ import (
 type InputEngine struct {
 	SessionId  uint64                 `json:"session_id"`
 	ChanId     string                 `json:"chan_id"`
+	IdNode     string                 `json:"id_node"`
 	FromEngine string                 `json:"from_engine"`
 	ToEngine   string                 `json:"to_engine"`
 	Node       *NodeRule              `json:"node"`

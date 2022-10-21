@@ -35,27 +35,29 @@ func (d *defaultStore) Has(sessionId uint64) bool {
 
 func (d *defaultStore) Done(sessionId uint64, result *data.OutputEngine) (session *data.ResultSession, success bool) {
 	success = false
-	if d.Has(sessionId) {
+	if !d.Has(sessionId) {
 		return
 	}
 
 	sessionInfo := d.Get(sessionId)
 
-	if sessionInfo.EndCount == -1 {
-		return
+	sessionInfo.EndCount -= 1
+	if sessionInfo.Result == nil {
+		sessionInfo.Result = map[string]*data.OutputEngine{}
 	}
+	sessionInfo.Result[result.IdNode] = result.Clone()
 
-	sessionInfo.EndCount = -1
-	sessionInfo.Result[result.FromEngine] = result
-
-	if sessionInfo.EndCount == 0 {
+	if sessionInfo.EndCount > 0 {
 		return
 	}
 	success = true
+	// delete store
+	d.mapData.Delete(sessionId)
+	// result
 	session = &data.ResultSession{
 		Id:     sessionInfo.Id,
 		Data:   sessionInfo.Data,
-		ChanId: session.ChanId,
+		ChanId: sessionInfo.ChanId,
 		Result: sessionInfo.Result,
 	}
 

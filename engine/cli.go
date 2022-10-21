@@ -3,16 +3,18 @@ package engine
 import (
 	"fmt"
 	"github.com/dipper-iot/dipper-engine/core"
+	"github.com/go-redis/redis/v9"
 	"github.com/urfave/cli/v2"
 	"os"
 	"os/signal"
 )
 
 type App struct {
-	flags      []cli.Flag
-	app        *cli.App
-	dipper     *core.DipperEngine
-	signalStop chan os.Signal
+	flags       []cli.Flag
+	app         *cli.App
+	dipper      *core.DipperEngine
+	signalStop  chan os.Signal
+	clientRedis *redis.Client
 	// hook
 	beforeStartHooks []HookFunc
 	beforeStopHooks  []HookFunc
@@ -38,10 +40,16 @@ func New(flags ...cli.Flag) *App {
 			Aliases: []string{"p"},
 		},
 		&cli.BoolFlag{
-			Name:    "session-from-queue",
-			Usage:   "Session from queue",
+			Name:    "session-input-queue",
+			Usage:   "Session input queue",
 			Value:   false,
-			Aliases: []string{"sq"},
+			Aliases: []string{"iq"},
+		},
+		&cli.BoolFlag{
+			Name:    "session-output-queue",
+			Usage:   "Session output queue",
+			Value:   false,
+			Aliases: []string{"oq"},
 		},
 		&cli.StringFlag{
 			Name:    "bus",

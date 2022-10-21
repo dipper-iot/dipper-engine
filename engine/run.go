@@ -9,7 +9,6 @@ import (
 	_switch "github.com/dipper-iot/dipper-engine/rules/switch"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 func (a *App) Run(args []string) error {
@@ -74,7 +73,7 @@ func (a *App) Run(args []string) error {
 		},
 	}
 
-	if err := a.app.Run(os.Args); err != nil {
+	if err := a.app.Run(args); err != nil {
 		return err
 	}
 	return nil

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/dipper-iot/dipper-engine/data"
 	"github.com/dipper-iot/dipper-engine/internal/debug"
+	"github.com/dipper-iot/dipper-engine/internal/util"
 	"github.com/dipper-iot/dipper-engine/queue"
 	log "github.com/sirupsen/logrus"
 )
@@ -75,12 +76,18 @@ func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Outpu
 		return nil
 	}
 
+	dataOutput.Next = util.ValidateNext(dataOutput.Next)
+
 	if len(dataOutput.Next) == 0 {
 		// finish
 		session, success := d.store.Done(dataOutput.SessionId, dataOutput)
 		if success {
 			d.publishBus("session-finish", session)
+			if d.queueOutput != nil {
+				d.queueOutput.Publish(ctx, session)
+			}
 		}
+
 		return nil
 	}
 
@@ -96,6 +103,8 @@ func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Outpu
 					err := ruleQueue.Publish(ctx, &data.InputEngine{
 						SessionId:  sessionInfo.Id,
 						ChanId:     sessionInfo.ChanId,
+						IdNode:     nextId,
+						BranchMain: dataOutput.BranchMain,
 						FromEngine: node.RuleId,
 						ToEngine:   dataOutput.FromEngine,
 						Node:       node,
@@ -108,7 +117,11 @@ func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Outpu
 						log.Error(err)
 						return err
 					}
+				} else {
+					log.Errorf("Not found Rule Id: %s", node.NodeId)
 				}
+			} else {
+				log.Errorf("Not found next Id Id: %s", nextId)
 			}
 		}
 	}

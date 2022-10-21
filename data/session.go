@@ -7,38 +7,38 @@ import (
 )
 
 type NodeRule struct {
-	NodeId string
-	RuleId string
-	Option map[string]interface{}
-	Debug  bool
-	End    bool
+	NodeId string                 `json:"node_id"`
+	RuleId string                 `json:"rule_id"`
+	Option map[string]interface{} `json:"option"`
+	Debug  bool                   `json:"debug"`
+	End    bool                   `json:"end"`
 }
 
 type Session struct {
-	ChanId   string
-	MapNode  map[string]*NodeRule
-	RootNode string
-	Data     map[string]interface{}
-	Result   map[string]*OutputEngine
+	ChanId   string                   `json:"chan_id"`
+	MapNode  map[string]*NodeRule     `json:"map_node"`
+	RootNode string                   `json:"root_node"`
+	Data     map[string]interface{}   `json:"data"`
+	Result   map[string]*OutputEngine `json:"result"`
 }
 
 type ResultSession struct {
-	Id     uint64
-	ChanId string
-	Data   map[string]interface{}
-	Result map[string]*OutputEngine
+	Id     uint64                   `json:"id"`
+	ChanId string                   `json:"chan_id"`
+	Data   map[string]interface{}   `json:"data"`
+	Result map[string]*OutputEngine `json:"result"`
 }
 
 type Info struct {
-	Id       uint64
-	Time     *time.Time
-	ChanId   string
-	Timeout  time.Duration
-	MapNode  map[string]*NodeRule
-	RootNode *NodeRule
-	Data     map[string]interface{}
-	Result   map[string]*OutputEngine
-	EndCount int
+	Id       uint64                   `json:"id"`
+	Time     *time.Time               `json:"time"`
+	ChanId   string                   `json:"chan_id"`
+	Timeout  time.Duration            `json:"timeout"`
+	MapNode  map[string]*NodeRule     `json:"map_node"`
+	RootNode *NodeRule                `json:"root_node"`
+	Data     map[string]interface{}   `json:"data"`
+	Result   map[string]*OutputEngine `json:"result"`
+	EndCount int                      `json:"end_count"`
 }
 
 func NewSessionInfo(timeout time.Duration, data *Session) *Info {

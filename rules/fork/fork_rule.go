@@ -6,7 +6,6 @@ import (
 	"github.com/dipper-iot/dipper-engine/errors"
 	"github.com/dipper-iot/dipper-engine/queue"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 type ForkRule struct {
@@ -46,15 +45,7 @@ func (f ForkRule) Run(ctx context.Context, subscribeQueueInput func(ctx context.
 
 func (f ForkRule) handlerInput(ctx context.Context, input *data.InputEngine) (output *data.OutputEngine, errOutput error) {
 
-	timeData := time.Now()
-	output = new(data.OutputEngine)
-	output.BranchMain = input.BranchMain
-	output.ChanId = input.ChanId
-	output.FromEngine = f.Id()
-	output.SessionId = input.SessionId
-	output.Time = &timeData
-	output.Data = input.Data
-	output.Type = data.TypeOutputEngineError
+	output = data.CreateOutput(input, f.Id())
 	var option Option
 
 	err := data.MapToStruct(input.Node.Option, &option)

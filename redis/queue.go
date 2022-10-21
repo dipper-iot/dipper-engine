@@ -60,6 +60,9 @@ func (r redisQueue[T]) Subscribe(ctx context.Context, callback queue.SubscribeFu
 			if err == io.EOF {
 				return
 			}
+			if err == redis.Nil {
+				continue
+			}
 			if err != nil {
 				log.Error(err)
 				return
