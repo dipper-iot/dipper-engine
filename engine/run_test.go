@@ -216,3 +216,23 @@ func TestApp_Run(t *testing.T) {
 
 	wg.Wait()
 }
+
+func Test_Run_Default(t *testing.T) {
+	e := New()
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+
+	e.Hook(AfterStart, func(dipper *core.DipperEngine, c *cli.Context) error {
+		go func() {
+			e.signalStop <- os.Interrupt
+		}()
+		wg.Done()
+		return nil
+	})
+
+	go func() {
+		e.Run(os.Args)
+	}()
+
+	wg.Wait()
+}
