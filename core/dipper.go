@@ -24,6 +24,7 @@ type DipperEngine struct {
 	factoryQueue       FactoryQueue[*data.InputEngine]
 	factoryQueueOutput FactoryQueueName[*data.OutputEngine]
 	queueInput         queue.QueueEngine[*data.Session]
+	queueOutput        queue.QueueEngine[*data.ResultSession]
 	store              store.Store
 	bus                bus2.Bus
 }
@@ -78,11 +79,18 @@ func (d *DipperEngine) addRule(rule Rule) {
 
 func (d *DipperEngine) Add(ctx context.Context, sessionData *data.Session) error {
 	sessionInfo := data.NewSessionInfo(time.Duration(d.config.TimeoutSession), sessionData)
+	sessionInfo.EndCount = 0
+	for _, rule := range sessionInfo.MapNode {
+		if rule.End {
+			sessionInfo.EndCount++
+		}
+	}
+
 	d.store.Add(sessionInfo)
 	return d.startSession(ctx, sessionInfo.Id)
 }
 
-func (d *DipperEngine) SessionFromQueue(factoryQueueName FactoryQueueName[*data.Session]) {
+func (d *DipperEngine) SessionInputQueue(factoryQueueName FactoryQueueName[*data.Session]) {
 	defaultTopic := "session-input"
 	topic, ok := d.config.BusMap[defaultTopic]
 	if !ok {
@@ -99,6 +107,15 @@ func (d *DipperEngine) SessionFromQueue(factoryQueueName FactoryQueueName[*data.
 		}
 		sessionDeliver.Ack()
 	})
+}
+
+func (d *DipperEngine) SessionOutputQueue(factoryQueueOutputName FactoryQueueName[*data.ResultSession]) {
+	defaultOutputTopic := "session-output"
+	topic, ok := d.config.BusMap[defaultOutputTopic]
+	if !ok {
+		topic = defaultOutputTopic
+	}
+	d.queueOutput = factoryQueueOutputName(topic)
 }
 
 func (d *DipperEngine) Start() error {

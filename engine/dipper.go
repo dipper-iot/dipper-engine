@@ -15,7 +15,7 @@ import (
 
 func (a *App) newEngine(c *cli.Context) error {
 	var (
-		usingRedis       bool = false
+		usingRedis       = false
 		client           *redis.Client
 		storeSession     store.Store
 		factoryQueue     core.FactoryQueue[*data.InputEngine]
@@ -27,7 +27,8 @@ func (a *App) newEngine(c *cli.Context) error {
 
 	configFile := c.String("config")
 	pluginEnable := c.Bool("plugin")
-	sessionFromQueue := c.Bool("session-from-queue")
+	sessionInputmQueue := c.Bool("session-input-queue")
+	sessionOutputQueue := c.Bool("session-output-queue")
 	busType := c.String("bus")
 	queueType := c.String("queue")
 	storeType := c.String("store")
@@ -49,6 +50,8 @@ func (a *App) newEngine(c *cli.Context) error {
 			log.Println(err)
 			return err
 		}
+
+		a.clientRedis = client
 	}
 
 	switch busType {
@@ -95,8 +98,11 @@ func (a *App) newEngine(c *cli.Context) error {
 	)
 
 	a.beforeStartHooks = append(a.beforeStartHooks, func(dipper *core.DipperEngine, c *cli.Context) error {
-		if sessionFromQueue && usingRedis {
-			a.dipper.SessionFromQueue(rs.FactoryQueueNameRedis[*data.Session](client, &data.Session{}))
+		if sessionOutputQueue && usingRedis {
+			a.dipper.SessionOutputQueue(rs.FactoryQueueNameRedis[*data.ResultSession](client, &data.ResultSession{}))
+		}
+		if sessionInputmQueue && usingRedis {
+			a.dipper.SessionInputQueue(rs.FactoryQueueNameRedis[*data.Session](client, &data.Session{}))
 		}
 		return nil
 	})

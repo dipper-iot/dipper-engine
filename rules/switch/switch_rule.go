@@ -6,7 +6,6 @@ import (
 	"github.com/dipper-iot/dipper-engine/errors"
 	"github.com/dipper-iot/dipper-engine/queue"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 type SwitchRule struct {
@@ -52,7 +51,7 @@ func (a SwitchRule) Stop(ctx context.Context) error {
 
 func (a SwitchRule) handlerInput(ctx context.Context, input *data.InputEngine) (output *data.OutputEngine, errOutput error) {
 
-	output = a.createOutput(input)
+	output = data.CreateOutput(input, a.Id())
 	var option Option
 
 	err := data.MapToStruct(input.Node.Option, &option)
@@ -96,22 +95,6 @@ func (a SwitchRule) handlerInput(ctx context.Context, input *data.InputEngine) (
 	output.Data = input.Data
 	output.Next = []string{result}
 	output.Type = data.TypeOutputEngineSuccess
-
-	return
-}
-
-func (a SwitchRule) createOutput(input *data.InputEngine) (output *data.OutputEngine) {
-
-	timeData := time.Now()
-
-	output = new(data.OutputEngine)
-	output.BranchMain = input.BranchMain
-	output.ChanId = input.ChanId
-	output.FromEngine = a.Id()
-	output.SessionId = input.SessionId
-	output.Time = &timeData
-	output.Data = input.Data
-	output.Type = data.TypeOutputEngineError
 
 	return
 }

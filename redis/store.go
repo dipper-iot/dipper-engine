@@ -80,7 +80,17 @@ func (r redisStore) Has(sessionId uint64) bool {
 	return data.Id == sessionId
 }
 
-func (r redisStore) Done(sessionId uint64, result *data.OutputEngine) (sessionResult *data.ResultSession, success bool) {
+func (r redisStore) delete(sessionId uint64) {
+	key := r.getKey(sessionId)
+
+	err := r.client.Del(context.TODO(), key).Err()
+	if err != nil {
+		log.Error(err)
+
+	}
+}
+
+func (r redisStore) Done(sessionId uint64, result *data.OutputEngine) (session *data.ResultSession, success bool) {
 	ctx := context.TODO()
 	for {
 		ok := r.locker.Lock(ctx)
@@ -93,25 +103,26 @@ func (r redisStore) Done(sessionId uint64, result *data.OutputEngine) (sessionRe
 	defer r.locker.Unlock(ctx)
 
 	success = false
-
-	if r.Has(sessionId) {
+	if !r.Has(sessionId) {
 		return
 	}
 
 	sessionInfo := r.Get(sessionId)
 
-	if sessionInfo.EndCount == -1 {
-		return
+	sessionInfo.EndCount -= 1
+	if sessionInfo.Result == nil {
+		sessionInfo.Result = map[string]*data.OutputEngine{}
 	}
+	sessionInfo.Result[result.IdNode] = result.Clone()
 
-	sessionInfo.EndCount = -1
-	sessionInfo.Result[result.FromEngine] = result
-
-	if sessionInfo.EndCount == 0 {
+	if sessionInfo.EndCount > 0 {
 		return
 	}
 	success = true
-	sessionResult = &data.ResultSession{
+	// delete store
+	r.delete(sessionId)
+	// result
+	session = &data.ResultSession{
 		Id:     sessionInfo.Id,
 		Data:   sessionInfo.Data,
 		ChanId: sessionInfo.ChanId,
