@@ -27,12 +27,10 @@
     }
   },
   "log": {
-    "level": "tracer",
+    "level": "info",
     "out": "console",
     "file_name": "dipper-engine.log"
   },
   "timeout_session": 30,
-  "plugins": [
-    "/plugins/redis.so"
-  ]
+  "plugins": []
 }
