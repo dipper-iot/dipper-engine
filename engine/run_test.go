@@ -18,18 +18,6 @@ import (
 func TestApp_Run(t *testing.T) {
 	e := New()
 	e.flags = []cli.Flag{
-		&cli.BoolFlag{
-			Name: "test.v",
-		},
-		&cli.BoolFlag{
-			Name: "test.paniconexit0",
-		},
-		&cli.BoolFlag{
-			Name: "test.run",
-		},
-		&cli.IntFlag{
-			Name: "test.timeout",
-		},
 		&cli.StringFlag{
 			Name:    "config",
 			Usage:   "Config file",
@@ -213,7 +201,7 @@ func TestApp_Run(t *testing.T) {
 	})
 
 	go func() {
-		e.Run(os.Args)
+		e.Run(os.Args[0:2])
 		wg.Done()
 	}()
 
@@ -223,17 +211,6 @@ func TestApp_Run(t *testing.T) {
 func Test_Run_Default(t *testing.T) {
 	e := New()
 	e.flags = []cli.Flag{
-		&cli.BoolFlag{
-			Name: "test.v",
-		},
-		&cli.BoolFlag{
-			Name: "test.paniconexit0",
-		},
-		&cli.BoolFlag{
-			Name: "test.run",
-		}, &cli.IntFlag{
-			Name: "test.timeout",
-		},
 		&cli.StringFlag{
 			Name:    "config",
 			Usage:   "Config file",
@@ -303,7 +280,7 @@ func Test_Run_Default(t *testing.T) {
 	})
 
 	go func() {
-		e.Run(os.Args)
+		e.Run(os.Args[0:2])
 	}()
 
 	wg.Wait()
