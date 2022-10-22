@@ -201,7 +201,7 @@ func TestApp_Run(t *testing.T) {
 	})
 
 	go func() {
-		e.Run(os.Args[0:2])
+		e.Run(os.Args[0:1])
 		wg.Done()
 	}()
 
@@ -280,7 +280,7 @@ func Test_Run_Default(t *testing.T) {
 	})
 
 	go func() {
-		e.Run(os.Args[0:2])
+		e.Run(os.Args[0:1])
 	}()
 
 	wg.Wait()
