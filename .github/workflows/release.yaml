@@ -26,4 +26,4 @@ jobs:
           goversion: "https://dl.google.com/go/go1.19.1.linux-amd64.tar.gz"
           project_path: "./"
           binary_name: "dipper-engine"
-          extra_files: LICENSE README.md
+          extra_files: LICENSE README.MD
