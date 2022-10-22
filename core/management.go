@@ -66,6 +66,7 @@ func (d *DipperEngine) publishBus(name string, dataOutput interface{}) {
 
 func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.OutputEngine) error {
 
+	dataOutput = dataOutput.Clone()
 	if dataOutput.Debug {
 		debug.PrintJson(dataOutput, "Debug-output => ChanId: %s | Form: %s ", dataOutput.ChanId, dataOutput.FromEngine)
 		d.publishBus("debug-output", dataOutput)
@@ -78,6 +79,7 @@ func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Outpu
 
 	dataOutput.Next = util.ValidateNext(dataOutput.Next)
 
+	log.Debug("Next => ", len(dataOutput.Next), "FromEngine => ", dataOutput.FromEngine)
 	if len(dataOutput.Next) == 0 {
 		// finish
 		session, success := d.store.Done(dataOutput.SessionId, dataOutput)

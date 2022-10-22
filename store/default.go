@@ -45,7 +45,7 @@ func (d *defaultStore) Done(sessionId uint64, result *data.OutputEngine) (sessio
 	if sessionInfo.Result == nil {
 		sessionInfo.Result = map[string]*data.OutputEngine{}
 	}
-	sessionInfo.Result[result.IdNode] = result.Clone()
+	sessionInfo.Result[result.IdNode] = result
 
 	if sessionInfo.EndCount > 0 {
 		return
