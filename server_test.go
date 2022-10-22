@@ -219,8 +219,8 @@ func Test_Run_Redis(t *testing.T) {
 	}
 
 	busData = bus.NewDefaultBus()
-	factoryQueue = rs.FactoryQueueRedis[*data.InputEngine](client, &data.InputEngine{})
-	factoryQueueName = rs.FactoryQueueNameRedis[*data.OutputEngine](client, &data.OutputEngine{})
+	factoryQueue = rs.FactoryQueueRedis[*data.InputEngine](client)
+	factoryQueueName = rs.FactoryQueueNameRedis[*data.OutputEngine](client)
 	storeSession = store.NewDefaultStore()
 
 	dipper := core.NewDipperEngine(
