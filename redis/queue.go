@@ -14,28 +14,26 @@ import (
 )
 
 type redisQueue[T any] struct {
-	client      *redis.Client
-	dataDefault T
-	name        string
+	client *redis.Client
+	name   string
 }
 
-func newRedisQueue[T any](client *redis.Client, id string, dataDefault T) *redisQueue[T] {
+func newRedisQueue[T any](client *redis.Client, id string) *redisQueue[T] {
 	return &redisQueue[T]{
-		client:      client,
-		dataDefault: dataDefault,
-		name:        fmt.Sprintf("dipper-queue-%s", id),
+		client: client,
+		name:   fmt.Sprintf("dipper-queue-%s", id),
 	}
 }
 
-func FactoryQueueRedis[T any](client *redis.Client, defaultQueue T) core.FactoryQueue[T] {
+func FactoryQueueRedis[T any](client *redis.Client) core.FactoryQueue[T] {
 	return func(engine core.Rule) queue.QueueEngine[T] {
-		return newRedisQueue[T](client, engine.Id(), defaultQueue)
+		return newRedisQueue[T](client, engine.Id())
 	}
 }
 
-func FactoryQueueNameRedis[T any](client *redis.Client, defaultQueue T) core.FactoryQueueName[T] {
+func FactoryQueueNameRedis[T any](client *redis.Client) core.FactoryQueueName[T] {
 	return func(name string) queue.QueueEngine[T] {
-		return newRedisQueue[T](client, name, defaultQueue)
+		return newRedisQueue[T](client, name)
 	}
 }
 
@@ -54,7 +52,7 @@ func (r redisQueue[T]) Publish(ctx context.Context, input T) error {
 
 func (r redisQueue[T]) Subscribe(ctx context.Context, callback queue.SubscribeFunction[T]) error {
 
-	go func(dataQueue T) {
+	go func() {
 		for {
 			data, err := r.client.RPop(ctx, r.name).Bytes()
 			if err == io.EOF {
@@ -68,7 +66,8 @@ func (r redisQueue[T]) Subscribe(ctx context.Context, callback queue.SubscribeFu
 				return
 			}
 
-			err = json.Unmarshal(data, dataQueue)
+			var transferData T
+			err = json.Unmarshal(data, &transferData)
 			if err != nil {
 				log.Error(err)
 				continue
@@ -76,7 +75,7 @@ func (r redisQueue[T]) Subscribe(ctx context.Context, callback queue.SubscribeFu
 			timeNow := time.Now()
 			callback(queue.NewDeliver[T](
 				ctx,
-				dataQueue,
+				transferData,
 				&timeNow,
 				// ack
 				func() {
@@ -87,7 +86,7 @@ func (r redisQueue[T]) Subscribe(ctx context.Context, callback queue.SubscribeFu
 					go func() {
 						// try 3 times
 						for i := 0; i < 3; i++ {
-							err := r.Publish(ctx, dataQueue)
+							err := r.Publish(ctx, transferData)
 							if err != nil {
 								log.Error(err)
 								continue
@@ -98,7 +97,7 @@ func (r redisQueue[T]) Subscribe(ctx context.Context, callback queue.SubscribeFu
 				},
 			))
 		}
-	}(r.dataDefault)
+	}()
 
 	return nil
 }

@@ -65,8 +65,8 @@ func (a *App) newEngine(c *cli.Context) error {
 
 	switch queueType {
 	case "redis":
-		factoryQueue = rs.FactoryQueueRedis[*data.InputEngine](client, &data.InputEngine{})
-		factoryQueueName = rs.FactoryQueueNameRedis[*data.OutputEngine](client, &data.OutputEngine{})
+		factoryQueue = rs.FactoryQueueRedis[*data.InputEngine](client)
+		factoryQueueName = rs.FactoryQueueNameRedis[*data.OutputEngine](client)
 		break
 	default:
 		factoryQueue = core.FactoryQueueDefault[*data.InputEngine]()
@@ -99,10 +99,10 @@ func (a *App) newEngine(c *cli.Context) error {
 
 	a.beforeStartHooks = append(a.beforeStartHooks, func(dipper *core.DipperEngine, c *cli.Context) error {
 		if sessionOutputQueue && usingRedis {
-			a.dipper.SessionOutputQueue(rs.FactoryQueueNameRedis[*data.ResultSession](client, &data.ResultSession{}))
+			a.dipper.SessionOutputQueue(rs.FactoryQueueNameRedis[*data.ResultSession](client))
 		}
 		if sessionInputmQueue && usingRedis {
-			a.dipper.SessionInputQueue(rs.FactoryQueueNameRedis[*data.Session](client, &data.Session{}))
+			a.dipper.SessionInputQueue(rs.FactoryQueueNameRedis[*data.Session](client))
 		}
 		return nil
 	})

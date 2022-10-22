@@ -115,7 +115,7 @@ func TestApp_Run(t *testing.T) {
 					End:    false,
 				},
 				"2": {
-					Debug: false,
+					Debug: true,
 					Option: map[string]interface{}{
 						"next_success": []string{"3", "4"},
 					},
