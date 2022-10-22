@@ -27,6 +27,9 @@ func TestApp_Run(t *testing.T) {
 		&cli.BoolFlag{
 			Name: "test.run",
 		},
+		&cli.IntFlag{
+			Name: "test.timeout",
+		},
 		&cli.StringFlag{
 			Name:    "config",
 			Usage:   "Config file",
@@ -228,6 +231,8 @@ func Test_Run_Default(t *testing.T) {
 		},
 		&cli.BoolFlag{
 			Name: "test.run",
+		}, &cli.IntFlag{
+			Name: "test.timeout",
 		},
 		&cli.StringFlag{
 			Name:    "config",
