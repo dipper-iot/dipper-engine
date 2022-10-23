@@ -1,6 +1,13 @@
 FROM golang:1.19-alpine as builder
+
+ENV GO111MODULE=on
+ENV GOFLAGS=" -ldflags '-w'"
+ENV GOPROXY=direct
+ENV GOSUMDB=off
+
 COPY . .
-RUN go get
+
+RUN go mod download
 RUN GOOS=linux GOARCH=amd64 go build
 
 FROM alpine:3.14 as run
