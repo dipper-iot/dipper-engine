@@ -7,11 +7,12 @@ import (
 )
 
 type NodeRule struct {
-	NodeId string                 `json:"node_id"`
-	RuleId string                 `json:"rule_id"`
-	Option map[string]interface{} `json:"option"`
-	Debug  bool                   `json:"debug"`
-	End    bool                   `json:"end"`
+	NodeId   string                 `json:"node_id"`
+	RuleId   string                 `json:"rule_id"`
+	Option   map[string]interface{} `json:"option"`
+	Infinite bool                   `json:"infinite"`
+	Debug    bool                   `json:"debug"`
+	End      bool                   `json:"end"`
 }
 
 type Session struct {
@@ -34,6 +35,7 @@ type Info struct {
 	Time     *time.Time               `json:"time"`
 	ChanId   string                   `json:"chan_id"`
 	Timeout  time.Duration            `json:"timeout"`
+	Infinite bool                     `json:"infinite"`
 	MapNode  map[string]*NodeRule     `json:"map_node"`
 	RootNode *NodeRule                `json:"root_node"`
 	Data     map[string]interface{}   `json:"data"`
@@ -56,12 +58,25 @@ func NewSessionInfo(timeout time.Duration, data *Session) *Info {
 		break
 	}
 
+	endCount := 0
+	infinite := false
+	for _, rule := range data.MapNode {
+		if rule.End {
+			endCount++
+		}
+		if rule.Infinite {
+			infinite = true
+		}
+	}
+
 	return &Info{
 		Id:       id,
 		Time:     &now,
+		Infinite: infinite,
 		ChanId:   data.ChanId,
 		Timeout:  timeout,
 		MapNode:  data.MapNode,
+		EndCount: endCount,
 		RootNode: data.MapNode[data.RootNode],
 		Data:     data.Data,
 	}

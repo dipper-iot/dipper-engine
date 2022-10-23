@@ -135,7 +135,7 @@ c.Hook(engine.AfterStart, func(dipper *core.DipperEngine, c *cli.Context) error 
                     "next_true":           "2",
                     "next_false":          "2",
                     "debug":               true,
-                    },
+                },
                 NodeId: "5",
                 RuleId: "conditional",
                 End:    false,

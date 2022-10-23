@@ -79,13 +79,6 @@ func (d *DipperEngine) addRule(rule Rule) {
 
 func (d *DipperEngine) Add(ctx context.Context, sessionData *data.Session) error {
 	sessionInfo := data.NewSessionInfo(time.Duration(d.config.TimeoutSession), sessionData)
-	sessionInfo.EndCount = 0
-	for _, rule := range sessionInfo.MapNode {
-		if rule.End {
-			sessionInfo.EndCount++
-		}
-	}
-
 	d.store.Add(sessionInfo)
 	return d.startSession(ctx, sessionInfo.Id)
 }

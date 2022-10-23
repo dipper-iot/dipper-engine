@@ -109,6 +109,10 @@ func (r redisStore) Done(sessionId uint64, result *data.OutputEngine) (session *
 
 	sessionInfo := r.Get(sessionId)
 
+	if sessionInfo.Infinite {
+		return nil, false
+	}
+
 	sessionInfo.EndCount -= 1
 	if sessionInfo.Result == nil {
 		sessionInfo.Result = map[string]*data.OutputEngine{}
