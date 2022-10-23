@@ -1,17 +1,18 @@
-FROM golang:1.19-alpine as builder
+FROM alpine:3.12.1 as builder
 
-ENV GO111MODULE=on
-ENV GOFLAGS=" -ldflags '-w'"
-ENV GOPROXY=direct
-ENV GOSUMDB=off
+COPY --from=golang:1.19-alpine /usr/local/go/ /usr/local/go/
+ENV PATH="/usr/local/go/bin:${PATH}"
+RUN apk --no-cache add make git gcc libtool musl-dev
 
-COPY . .
-
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
-RUN GOOS=linux GOARCH=amd64 go build
+COPY . /
+RUN make build; rm -rf $GOPATH/pkg/mod
 
-FROM alpine:3.14 as run
+
+FROM alpine:3.12.1
 RUN apk add --no-progress --no-cache ca-certificates
-COPY --from=builder dipper-engine /dipper-engine
+COPY --from=builder /dipper-engine /dipper-engine
 ADD config.json /config.json
 ENTRYPOINT [ "/dipper-engine" ]
