@@ -99,6 +99,9 @@ func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Outpu
 		for _, nextId := range dataOutput.Next {
 			node, ok := sessionInfo.MapNode[nextId]
 			if ok {
+				if node.Option == nil {
+					node.Option = map[string]interface{}{}
+				}
 				node.Option["debug"] = node.Debug
 				ruleQueue, ok := d.mapQueueInputRule[node.RuleId]
 				if ok {
