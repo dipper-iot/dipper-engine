@@ -11,6 +11,14 @@ import (
 type ForkRule struct {
 }
 
+func NewForkRule() *ForkRule {
+	return &ForkRule{}
+}
+
+func (f ForkRule) Infinity() bool {
+	return false
+}
+
 func (f ForkRule) Id() string {
 	return "fork"
 }

@@ -11,6 +11,14 @@ import (
 type Arithmetic struct {
 }
 
+func NewArithmetic() *Arithmetic {
+	return &Arithmetic{}
+}
+
+func (a Arithmetic) Infinity() bool {
+	return false
+}
+
 func (a Arithmetic) Id() string {
 	return "arithmetic"
 }

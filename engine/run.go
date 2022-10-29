@@ -5,7 +5,11 @@ import (
 	"github.com/dipper-iot/dipper-engine/rules/arithmetic"
 	"github.com/dipper-iot/dipper-engine/rules/conditional"
 	"github.com/dipper-iot/dipper-engine/rules/fork"
+	"github.com/dipper-iot/dipper-engine/rules/input_redis_queue"
+	"github.com/dipper-iot/dipper-engine/rules/input_redis_queue_extend"
 	log2 "github.com/dipper-iot/dipper-engine/rules/log"
+	"github.com/dipper-iot/dipper-engine/rules/output_redis_queue"
+	output_redis_extend_queue "github.com/dipper-iot/dipper-engine/rules/output_redis_queue_extend"
 	_switch "github.com/dipper-iot/dipper-engine/rules/switch"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
@@ -35,11 +39,15 @@ func (a *App) Run(args []string) error {
 			}
 
 			a.dipper.AddRule(
-				&log2.LogRule{},
-				&arithmetic.Arithmetic{},
-				&fork.ForkRule{},
-				&conditional.ConditionalRule{},
-				&_switch.SwitchRule{},
+				log2.NewLogRule(),
+				arithmetic.NewArithmetic(),
+				fork.NewForkRule(),
+				conditional.NewConditionalRule(),
+				_switch.NewSwitchRule(),
+				input_redis_queue.NewInputRedisQueueRule(),
+				input_redis_queue_extend.NewInputRedisQueueExtendRule(),
+				output_redis_queue.NewOutputRedisQueueRule(),
+				output_redis_extend_queue.NewOutputRedisQueueExtendRule(),
 			)
 
 			err = a.dipper.Start()

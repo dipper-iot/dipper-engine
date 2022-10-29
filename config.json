@@ -24,6 +24,32 @@
       "enable": true,
       "worker": 1,
       "options": {}
+    },
+    "input-redis-queue": {
+      "enable": false,
+      "worker": 1,
+      "options": {
+        "redis_address": "127.0.0.1:6379",
+        "redis_db":      0
+      }
+    },
+    "input-redis-queue-extend": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
+    },
+    "output-redis-queue": {
+      "enable": false,
+      "worker": 1,
+      "options": {
+        "redis_address": "127.0.0.1:6379",
+        "redis_db":      0
+      }
+    },
+    "output-redis-queue-extend": {
+      "enable": true,
+      "worker": 1,
+      "options": {}
     }
   },
   "log": {

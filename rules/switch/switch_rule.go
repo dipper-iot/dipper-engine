@@ -11,6 +11,14 @@ import (
 type SwitchRule struct {
 }
 
+func NewSwitchRule() *SwitchRule {
+	return &SwitchRule{}
+}
+
+func (a SwitchRule) Infinity() bool {
+	return false
+}
+
 func (a SwitchRule) Id() string {
 	return "switch"
 }

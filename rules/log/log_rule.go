@@ -11,6 +11,14 @@ import (
 type LogRule struct {
 }
 
+func NewLogRule() *LogRule {
+	return &LogRule{}
+}
+
+func (l LogRule) Infinity() bool {
+	return false
+}
+
 func (l LogRule) Id() string {
 	return "log-core"
 }
