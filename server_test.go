@@ -162,6 +162,10 @@ type LogTest struct {
 	wg *sync.WaitGroup
 }
 
+func (l *LogTest) Infinity() bool {
+	return false
+}
+
 func (l *LogTest) Id() string {
 	return "test"
 }
