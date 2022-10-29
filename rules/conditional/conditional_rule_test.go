@@ -38,11 +38,10 @@ func TestConditionalRule_Run(t *testing.T) {
 				"next_true":           "4",
 				"next_false":          "4",
 			},
-			End:      false,
-			Infinite: false,
-			Debug:    false,
-			RuleId:   "1",
-			NodeId:   "1",
+			End:    false,
+			Debug:  false,
+			RuleId: "1",
+			NodeId: "1",
 		},
 		Data: map[string]interface{}{
 			"default": map[string]interface{}{
@@ -78,11 +77,10 @@ func TestConditionalRule_Run(t *testing.T) {
 				"next_true":           "4",
 				"next_false":          "4",
 			},
-			End:      false,
-			Infinite: false,
-			Debug:    false,
-			RuleId:   "1",
-			NodeId:   "1",
+			End:    false,
+			Debug:  false,
+			RuleId: "1",
+			NodeId: "1",
 		},
 		Data: map[string]interface{}{
 			"default": map[string]interface{}{
