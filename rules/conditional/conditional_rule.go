@@ -11,6 +11,14 @@ import (
 type ConditionalRule struct {
 }
 
+func NewConditionalRule() *ConditionalRule {
+	return &ConditionalRule{}
+}
+
+func (a ConditionalRule) Infinity() bool {
+	return false
+}
+
 func (a ConditionalRule) Id() string {
 	return "conditional"
 }

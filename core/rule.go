@@ -8,6 +8,7 @@ import (
 
 type Rule interface {
 	Id() string
+	Infinity() bool
 	Initialize(ctx context.Context, option map[string]interface{}) error
 	Run(ctx context.Context,
 		subscribeQueueInput func(ctx context.Context, callback queue.SubscribeFunction[*data.InputEngine]) error,

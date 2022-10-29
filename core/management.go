@@ -9,35 +9,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (d *DipperEngine) startSession(ctx context.Context, sessionId uint64) error {
-	if d.store.Has(sessionId) {
-		sessionInfo := d.store.Get(sessionId)
-		if sessionInfo.RootNode != nil {
-			node := sessionInfo.RootNode
-			ruleQueue, ok := d.mapQueueInputRule[node.RuleId]
-			if ok {
-				err := ruleQueue.Publish(ctx, &data.InputEngine{
-					SessionId:  sessionInfo.Id,
-					ChanId:     sessionInfo.ChanId,
-					FromEngine: node.NodeId,
-					ToEngine:   "",
-					Node:       node,
-					Data:       sessionInfo.Data,
-					Time:       sessionInfo.Time,
-					Type:       data.TypeOutputEngineSuccess,
-					Error:      nil,
-				})
-				if err != nil {
-					log.Error(err)
-					return err
-				}
-			}
-		}
-	}
-
-	return nil
-}
-
 func (d *DipperEngine) registerOutput() {
 
 	err := d.queueOutputRule.Subscribe(d.ctx, func(deliver *queue.Deliver[*data.OutputEngine]) {

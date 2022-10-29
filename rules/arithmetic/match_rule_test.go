@@ -1,4 +1,4 @@
-package conditional
+package arithmetic
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-func TestConditionalRule_Run(t *testing.T) {
-	a := NewConditionalRule()
+func TestMatchRule_Run(t *testing.T) {
+	a := NewArithmetic()
 	a.Infinity()
 	a.Initialize(context.TODO(), map[string]interface{}{})
 	qsub := queue.NewDefaultQueue[*data.InputEngine]("qsub")
@@ -31,7 +31,7 @@ func TestConditionalRule_Run(t *testing.T) {
 						"type":  "val",
 						"value": "default.b",
 					},
-					"operator": "<>",
+					"operator": "+",
 					"type":     "operator",
 				},
 				"set_param_result_to": "default.cond_a_b",
@@ -70,7 +70,7 @@ func TestConditionalRule_Run(t *testing.T) {
 						"type":  "val",
 						"value": "default.b",
 					},
-					"operator": "<>",
+					"operator": "-",
 					"type":     "operator",
 				},
 				"set_param_result_to": "default.cond_a_b",

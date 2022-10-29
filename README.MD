@@ -1,5 +1,14 @@
 # Rule Engine Golang
 [![Go](https://github.com/dipper-iot/dipper-engine/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/dipper-iot/dipper-engine/actions/workflows/go.yml) [![CodeQL](https://github.com/dipper-iot/dipper-engine/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/dipper-iot/dipper-engine/actions/workflows/codeql.yml) [![Coverage Status](https://coveralls.io/repos/github/dipper-iot/dipper-engine/badge.svg?branch=main)](https://coveralls.io/github/dipper-iot/dipper-engine?branch=main)
+
+<!-- TOC -->
+
+  * [Setup](#setup)
+  * [Run](#run)
+  * [Rule Engine](#rule-engine)
+  * [Example Developer Test](#example-developer-test)
+<!-- TOC -->
+
 ## Setup
 
 ```shell
@@ -41,17 +50,35 @@ Start Dipper Engine
 
 Rules: 5
 -----------------------------------------------------------
-No Rule Name   Worker Status
-1  log-core    1      enable
-2  arithmetic  1      enable
-3  fork        1      enable
-4  conditional 1      enable
-5  switch      1      enable
+No  Rule Name                  Worker  Infinity  Status  
+1   arithmetic                 1       false     enable  
+2   conditional                1       false     enable  
+3   fork                       1       false     enable  
+4   input-redis-queue          0       true      disable 
+5   input-redis-queue-extend   1       true      enable  
+6   log-core                   1       false     enable  
+7   output-redis-queue         0       false     disable 
+8   output-redis-queue-extend  1       false     enable  
+9   switch                     1       false     enable
 -----------------------------------------------------------
 
 Running Engine...
 
 ```
+
+## Rule Engine
+
+|  No   | Rule                               | Description                      | Infinity | Doc |
+|:-----:|:-----------------------------------|:---------------------------------|:--------:|-----|
+|   1   | arithmetic                         | operator match rule              |  false   |     |
+|   2   | conditional                        | compare data rule                |  false   |     |
+|   3   | fork                               | fork to rules                    |  false   |     |
+|   4   | input-redis-queue                  | input data from queue on config  |   true   |     |
+|   5   | input-redis-queue-extend           | input data from queue on option  |   true   |     |
+|   6   | log-core                           | log to console                   |  false   |     |
+|   7   | output-redis-queue                 | output data from queue on config |  false   |     |
+|   8   | output-redis-queue-extend          | output data from queue on option |  false   |     |
+|   9   | switch                             | switch to rules                  |  false   |     |
 
 ## Example Developer Test
 
