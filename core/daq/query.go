@@ -1,6 +1,7 @@
 package daq
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -132,6 +133,9 @@ func (q *Query) Update(data interface{}) error {
 		output = q.dataArray
 		break
 	}
+	if q.index == 0 {
+		return nil
+	}
 
 	return q.update(q.index-1, output)
 }
@@ -237,6 +241,19 @@ func (q *Query) String() (string, error) {
 	v := reflect.ValueOf(q.data)
 	q.dataString = v.String()
 	return q.dataString, nil
+}
+
+func (q *Query) Interface() (interface{}, error) {
+
+	mapData, err := q.Object()
+	if err != nil {
+		return nil, err
+	}
+	name := q.paths[q.index]
+	if !mapData.Has(name) {
+		return nil, errors.New("not found " + name)
+	}
+	return mapData.data[name], nil
 }
 
 func (q *Query) object() (map[string]interface{}, error) {

@@ -1,4 +1,4 @@
-module github.com/dipper-iot/dipper-engine/examples/redis-queue
+module github.com/dipper-iot/dipper-engine/examples/base
 
 go 1.18
 

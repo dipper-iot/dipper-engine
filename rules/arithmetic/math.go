@@ -1,104 +1,46 @@
 package arithmetic
 
 import (
-	"fmt"
+	"github.com/Knetic/govaluate"
 	"github.com/dipper-iot/dipper-engine/core/daq"
-	"strconv"
+	"github.com/dipper-iot/dipper-engine/pkg/expression"
+	"github.com/dipper-iot/dipper-engine/pkg/util"
 )
 
 type Math struct {
 	mainBranch string
-	dataQuery  *daq.Daq
+	data       map[string]interface{}
 }
 
 func NewMath(mainBranch string, dataQuery map[string]interface{}) *Math {
 	return &Math{
 		mainBranch: mainBranch,
-		dataQuery:  daq.NewDaq(dataQuery),
+		data:       util.DataToValue(dataQuery, mainBranch),
 	}
 }
 
-func (m Math) Run(leafNodes map[string]*LeafNode) error {
+func (m Math) Run(expressionStr string, keyResult string) error {
 
-	for keyResult, node := range leafNodes {
-		result, err := m.calculator(node)
-		if err != nil {
-			return err
-		}
-		err = m.dataQuery.Update(keyResult, result)
-		if err != nil {
-			return err
-		}
+	exp, err := govaluate.NewEvaluableExpressionWithFunctions(expressionStr, expression.ExpressionFunctions)
+	if err != nil {
+		return err
 	}
+
+	result, err := exp.Evaluate(m.data)
+	if err != nil {
+		return err
+	}
+
+	queryData := daq.NewDaq(m.data)
+	err = queryData.Update(keyResult, result)
+	if err != nil {
+		return err
+	}
+	m.data = queryData.Data()
 
 	return nil
 }
 
-func (m Math) calculator(leafNode *LeafNode) (result float64, err error) {
-	if leafNode.Type == NoneType && leafNode.Left == nil && leafNode.Right == nil {
-		return
-	}
-	if leafNode.Type == ValueType {
-		var query *daq.Query
-		query, err = m.dataQuery.Query(leafNode.Value)
-		if err != nil {
-			return
-		}
-
-		result, err = query.Number()
-		return
-	}
-	if leafNode.Type == NumberType {
-		result, err = strconv.ParseFloat(leafNode.Value, 10)
-		return
-	}
-	if leafNode.Type != OperatorType {
-		err = fmt.Errorf("not found Type: %s", leafNode.Type)
-		return
-	}
-	var left, right float64
-	if leafNode.Left != nil {
-		left, err = m.calculator(leafNode.Left)
-		if err != nil {
-			return
-		}
-	}
-	if leafNode.Right != nil {
-		right, err = m.calculator(leafNode.Right)
-		if err != nil {
-			return
-		}
-	}
-
-	switch leafNode.Operator {
-	case Add:
-		{
-			result = left + right
-			break
-		}
-	case Subtract:
-		{
-			result = left - right
-			break
-		}
-	case Multiplication:
-		{
-			result = left * right
-			break
-		}
-	case Division:
-		{
-			if right == 0 {
-				err = fmt.Errorf("division by zero")
-				return
-			}
-			result = left / right
-			break
-		}
-	}
-	return
-}
-
 func (m Math) Data() map[string]interface{} {
-	return m.dataQuery.Data()
+	return util.ValueToData(m.data, m.mainBranch)
 }

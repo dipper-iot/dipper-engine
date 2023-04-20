@@ -22,19 +22,8 @@ func TestConditionalRule_Run(t *testing.T) {
 		ToEngine:   "test",
 		Node: &data.NodeRule{
 			Option: map[string]interface{}{
-				"operator": map[string]interface{}{
-					"right": map[string]interface{}{
-						"value": "default.a",
-						"type":  "val",
-					},
-					"left": map[string]interface{}{
-						"type":  "val",
-						"value": "default.b",
-					},
-					"operator": "<>",
-					"type":     "operator",
-				},
-				"set_param_result_to": "default.cond_a_b",
+				"conditional":         "a > b",
+				"set_param_result_to": "cond_a_b",
 				"next_error":          "4",
 				"next_true":           "4",
 				"next_false":          "4",
@@ -61,19 +50,8 @@ func TestConditionalRule_Run(t *testing.T) {
 		ToEngine:   "test",
 		Node: &data.NodeRule{
 			Option: map[string]interface{}{
-				"operator": map[string]interface{}{
-					"right": map[string]interface{}{
-						"value": "default.f",
-						"type":  "val",
-					},
-					"left": map[string]interface{}{
-						"type":  "val",
-						"value": "default.b",
-					},
-					"operator": "<>",
-					"type":     "operator",
-				},
-				"set_param_result_to": "default.cond_a_b",
+				"conditional":         "a < b",
+				"set_param_result_to": "cond_a_b",
 				"next_error":          "4",
 				"next_true":           "4",
 				"next_false":          "4",

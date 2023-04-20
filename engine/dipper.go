@@ -83,14 +83,17 @@ func (a *App) newEngine(c *cli.Context) error {
 		break
 	}
 
-	err := util.ReadFile(&config, configFile)
-	if err != nil {
-		log.Println(err)
-		return err
+	if a.config == nil {
+		err := util.ReadFile(&config, configFile)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		a.config = &config
 	}
 
 	a.dipper = core.NewDipperEngine(
-		&config,
+		a.config,
 		factoryQueue,
 		factoryQueueName,
 		storeSession,

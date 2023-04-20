@@ -2,6 +2,7 @@ package arithmetic
 
 import (
 	"context"
+	"fmt"
 	"github.com/dipper-iot/dipper-engine/data"
 	"github.com/dipper-iot/dipper-engine/errors"
 	"github.com/dipper-iot/dipper-engine/queue"
@@ -83,7 +84,14 @@ func (a Arithmetic) handlerInput(ctx context.Context, input *data.InputEngine) (
 
 	mathRunner := NewMath(input.BranchMain, input.Data)
 
-	err = mathRunner.Run(option.List)
+	for keyResult, exp := range option.Operators {
+		err = mathRunner.Run(exp, keyResult)
+		if err != nil {
+			err = fmt.Errorf("%s=%s have error: %s ", keyResult, exp, err.Error())
+			break
+		}
+	}
+
 	if err != nil {
 		log.Errorf("Run Math error -> %s", err.Error())
 

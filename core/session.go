@@ -111,3 +111,7 @@ func (d *DipperEngine) SessionOutputQueue(factoryQueueOutputName FactoryQueueNam
 	}
 	d.queueOutput = factoryQueueOutputName(topic)
 }
+
+func (d *DipperEngine) OutputSubscribe(ctx context.Context, callback queue.SubscribeFunction[*data.ResultSession]) {
+	d.queueOutput.Subscribe(ctx, callback)
+}

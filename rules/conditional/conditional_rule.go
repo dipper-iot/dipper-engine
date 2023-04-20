@@ -84,7 +84,7 @@ func (a ConditionalRule) handlerInput(ctx context.Context, input *data.InputEngi
 	mathRunner := NewConditional(input.BranchMain, input.Data)
 
 	var result bool
-	result, err = mathRunner.Run(option.Operator, option.SetParamResultTo)
+	result, err = mathRunner.Run(option.Conditional, option.SetParamResultTo)
 	if err != nil {
 		log.Errorf("Run Math error -> %s", err.Error())
 

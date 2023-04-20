@@ -87,11 +87,20 @@ Running Engine...
 c := engine.New()
 
 c.Hook(engine.AfterStart, func(dipper *core.DipperEngine, c *cli.Context) error {
+    
+    factoryResultSessionName := core.FactoryQueueNameDefault[*data.ResultSession]()
+    dipper.SessionOutputQueue(factoryResultSessionName)
+    
+    dipper.OutputSubscribe(context.TODO(), func(sessionDeliver *queue.Deliver[*data.ResultSession]) {
+        debug.PrintJson(sessionDeliver.Data, "Result: ")
+        sessionDeliver.Ack()
+    })
+    
     return dipper.Add(context.Background(), &data.Session{
         Data: map[string]interface{}{
-            "default": map[string]interface{}{
-                "a": 10, 
-                "b": 20, 
+                "default": map[string]interface{}{
+                "a": 10,
+                "b": 20,
                 "d": 5,
             },
         },
@@ -99,75 +108,53 @@ c.Hook(engine.AfterStart, func(dipper *core.DipperEngine, c *cli.Context) error 
         RootNode: "1",
         MapNode: map[string]*data.NodeRule{
             "1": {
-                Debug: true,
+                Debug: false,
                 Option: map[string]interface{}{
-                    "list": map[string]interface{}{
-						"default.c": map[string]interface{}{
-                            "right": map[string]interface{}{
-                                "value": "default.a",
-                                "type":  "val",
-                            },
-                            "left": map[string]interface{}{
-                                "type":  "val",
-                                "value": "default.b",
-                            },
-                            "operator": "add",
-                            "type":     "operator",
-                        },
+                        "operators": map[string]string{
+                        "c": "a+b",
                     },
                     "next_error":   "2",
                     "next_success": "3",
-                    "debug":        true,
+                    "debug":        false,
                 },
                 NodeId: "4",
                 RuleId: "arithmetic",
                 End:    false,
             },
             "2": {
-                Debug: true,
+                Debug: false,
                 Option: map[string]interface{}{
-                    "debug": true,
+                    "debug": false,
                 },
                 NodeId: "2",
                 RuleId: "log-core",
                 End:    true,
             },
             "3": {
-                Debug: true,
+                Debug: false,
                 Option: map[string]interface{}{
                     "next_success": []string{"5", "2"},
-                    "debug":        true,
+                    "debug":        false,
                 },
                 NodeId: "3",
                 RuleId: "fork",
                 End:    false,
             },
             "5": {
-                Debug: true,
+                Debug: false,
                 Option: map[string]interface{}{
-                    "operator": map[string]interface{}{ 
-						"right": map[string]interface{}{
-                            "value": "default.a",
-                            "type":  "val",
-                        },
-                        "left": map[string]interface{}{
-                            "type":  "val",
-                            "value": "default.b",
-                        },
-                        "operator": "==",
-                        "type":     "operator",
-                    },
-                    "set_param_result_to": "default.cond_a_b",
+                    "conditional":         "a == b",
+                    "set_param_result_to": "cond_a_b",
                     "next_error":          "2",
                     "next_true":           "2",
                     "next_false":          "2",
-                    "debug":               true,
+                    "debug":               false,
                 },
                 NodeId: "5",
                 RuleId: "conditional",
                 End:    false,
             },
-		},
+        },
     })
 })
 

@@ -10,6 +10,7 @@ import (
 )
 
 type App struct {
+	config      *core.ConfigEngine
 	flags       []cli.Flag
 	app         *cli.App
 	dipper      *core.DipperEngine
@@ -22,6 +23,10 @@ type App struct {
 }
 
 func New(flags ...cli.Flag) *App {
+	return NewWithConfig(nil, flags...)
+}
+
+func NewWithConfig(config *core.ConfigEngine, flags ...cli.Flag) *App {
 
 	signalStop := make(chan os.Signal)
 	signal.Notify(signalStop, os.Interrupt, os.Kill)
@@ -84,6 +89,7 @@ func New(flags ...cli.Flag) *App {
 		},
 	)
 	return &App{
+		config:           config,
 		flags:            flags,
 		signalStop:       signalStop,
 		beforeStartHooks: []HookFunc{},

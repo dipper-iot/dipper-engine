@@ -3,6 +3,7 @@ module github.com/dipper-iot/dipper-engine
 go 1.18
 
 require (
+	github.com/Knetic/govaluate v3.0.0+incompatible
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/go-redis/redis/v9 v9.0.0-rc.1
 	github.com/sirupsen/logrus v1.9.0

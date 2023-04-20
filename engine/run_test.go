@@ -93,19 +93,8 @@ func TestApp_Run(t *testing.T) {
 				"1": {
 					Debug: false,
 					Option: map[string]interface{}{
-						"list": map[string]interface{}{
-							"default.c": map[string]interface{}{
-								"right": map[string]interface{}{
-									"value": "default.a",
-									"type":  "val",
-								},
-								"left": map[string]interface{}{
-									"type":  "val",
-									"value": "default.b",
-								},
-								"operator": "add",
-								"type":     "operator",
-							},
+						"operators": map[string]string{
+							"c": "a+b",
 						},
 						"next_error":   "2",
 						"next_success": "2",
@@ -133,18 +122,7 @@ func TestApp_Run(t *testing.T) {
 				"4": {
 					Debug: false,
 					Option: map[string]interface{}{
-						"operator": map[string]interface{}{
-							"right": map[string]interface{}{
-								"value": "default.a",
-								"type":  "val",
-							},
-							"left": map[string]interface{}{
-								"type":  "val",
-								"value": "default.b",
-							},
-							"operator": "<>",
-							"type":     "operator",
-						},
+						"conditional":         "a != b ",
 						"set_param_result_to": "default.cond_a_b",
 						"next_error":          "2",
 						"next_true":           "",

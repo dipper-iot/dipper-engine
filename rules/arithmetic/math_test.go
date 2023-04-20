@@ -1,6 +1,8 @@
 package arithmetic
 
 import (
+	"github.com/dipper-iot/dipper-engine/core/daq"
+	"github.com/dipper-iot/dipper-engine/pkg/util"
 	"testing"
 )
 
@@ -18,148 +20,52 @@ func TestMath_Run(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		data      map[string]*LeafNode
+		exp       string
+		keyResult string
 		mapResult map[string]float64
 		wantErr   bool
 	}{
 		{
-			name:    "test c=ac.a+b",
-			wantErr: false,
-			data: map[string]*LeafNode{
-				"default.c": {
-					Right: &LeafNode{
-						Value: "default.a",
-						Type:  ValueType,
-					},
-					Left: &LeafNode{
-						Type:  ValueType,
-						Value: "default.b",
-					},
-					Operator: Add,
-					Type:     OperatorType,
-				},
-			},
+			name:      "test c=nFromObj(ac,'a')+b",
+			wantErr:   false,
+			exp:       "nFromObj(ac,'a')+b",
+			keyResult: "c",
 			mapResult: map[string]float64{
 				"default.c": 4,
 			},
 		},
 		{
-			name:    "test d=a-b",
-			wantErr: false,
-			data: map[string]*LeafNode{
-				"default.d": {
-					Right: &LeafNode{
-						Value: "default.a",
-						Type:  ValueType,
-					},
-					Left: &LeafNode{
-						Type:  ValueType,
-						Value: "default.b",
-					},
-					Operator: Subtract,
-					Type:     OperatorType,
-				},
-			},
+			name:      "test d=a-b",
+			wantErr:   false,
+			exp:       "a-b",
+			keyResult: "d",
 			mapResult: map[string]float64{
 				"default.d": 0,
 			},
 		},
 		{
-			name:    "test e=a*b",
-			wantErr: false,
-			data: map[string]*LeafNode{
-				"default.e": {
-					Right: &LeafNode{
-						Value: "default.a",
-						Type:  ValueType,
-					},
-					Left: &LeafNode{
-						Type:  ValueType,
-						Value: "default.b",
-					},
-					Operator: Multiplication,
-					Type:     OperatorType,
-				},
-			},
+			name:      "test e=a*b",
+			wantErr:   false,
+			exp:       "a*b",
+			keyResult: "e",
 			mapResult: map[string]float64{
 				"default.e": 4,
 			},
 		},
 		{
-			name:    "test f=a/b",
-			wantErr: false,
-			data: map[string]*LeafNode{
-				"default.f": {
-					Right: &LeafNode{
-						Value: "default.a",
-						Type:  ValueType,
-					},
-					Left: &LeafNode{
-						Type:  ValueType,
-						Value: "default.b",
-					},
-					Operator: Division,
-					Type:     OperatorType,
-				},
-			},
-			mapResult: map[string]float64{
-				"default.f": 1,
-			},
-		},
-		{
-			name:    "test g=a+10",
-			wantErr: false,
-			data: map[string]*LeafNode{
-				"default.g": {
-					Right: &LeafNode{
-						Value: "default.a",
-						Type:  ValueType,
-					},
-					Left: &LeafNode{
-						Type:  NumberType,
-						Value: "10",
-					},
-					Operator: Add,
-					Type:     OperatorType,
-				},
-			},
+			name:      "test g=a+10",
+			wantErr:   false,
+			exp:       "a+10",
+			keyResult: "g",
 			mapResult: map[string]float64{
 				"default.g": 12,
 			},
 		},
 		{
-			name:    "test y=(a+b)*(a+x)",
-			wantErr: false,
-			data: map[string]*LeafNode{
-				"default.y": {
-					Right: &LeafNode{
-						Type:     OperatorType,
-						Operator: Add,
-						Left: &LeafNode{
-							Value: "default.a",
-							Type:  ValueType,
-						},
-						Right: &LeafNode{
-							Type:  ValueType,
-							Value: "default.b",
-						},
-					},
-					Left: &LeafNode{
-						Type:     OperatorType,
-						Operator: Add,
-						Left: &LeafNode{
-							Value: "default.a",
-							Type:  ValueType,
-						},
-						Right: &LeafNode{
-							Type:  ValueType,
-							Value: "default.x",
-						},
-					},
-					Operator: Multiplication,
-					Type:     OperatorType,
-				},
-			},
+			name:      "test y=(a+b)*(a+x)",
+			wantErr:   false,
+			exp:       "(a+b)*(a+x)",
+			keyResult: "y",
 			mapResult: map[string]float64{
 				"default.y": 20,
 			},
@@ -168,11 +74,13 @@ func TestMath_Run(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if err := m.Run(tt.data); (err != nil) != tt.wantErr {
+			if err := m.Run(tt.exp, tt.keyResult); (err != nil) != tt.wantErr {
 				t.Errorf("Run() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
 			for key, result := range tt.mapResult {
-				q, err := m.dataQuery.Query(key)
+				dataQuery := daq.NewDaq(util.ValueToData(m.data, "default"))
+				q, err := dataQuery.Query(key)
 				if err != nil {
 					t.Errorf("Query() error = %v", err)
 					continue

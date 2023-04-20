@@ -4,16 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/dipper-iot/dipper-engine/core"
 	"github.com/dipper-iot/dipper-engine/data"
+	"github.com/dipper-iot/dipper-engine/engine"
 	"github.com/go-redis/redis/v9"
 	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli/v2"
 	"io"
-	"sync"
+	"os"
 )
 
 func main() {
 	client := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
+		Addr:     "127.0.0.1:6379",
+		Password: "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81",
 	})
 
 	err := client.Ping(context.TODO()).Err()
@@ -22,98 +26,77 @@ func main() {
 		return
 	}
 
-	session := &data.Session{
-		Data: map[string]interface{}{
-			"default": map[string]interface{}{
-				"a": 10,
-				"b": 20,
-				"d": 5,
+	c := engine.NewWithConfig(getConfig())
+
+	c.Hook(engine.AfterStart, func(dipper *core.DipperEngine, c *cli.Context) error {
+
+		session := &data.Session{
+			Data: map[string]interface{}{
+				"default": map[string]interface{}{
+					"a": 10,
+					"b": 20,
+					"d": 5,
+				},
 			},
-		},
-		ChanId:   "test-1",
-		RootNode: "1",
-		MapNode: map[string]*data.NodeRule{
-			"1": {
-				Debug: false,
-				Option: map[string]interface{}{
-					"list": map[string]interface{}{
-						"default.c": map[string]interface{}{
-							"right": map[string]interface{}{
-								"value": "default.a",
-								"type":  "val",
-							},
-							"left": map[string]interface{}{
-								"type":  "val",
-								"value": "default.b",
-							},
-							"operator": "add",
-							"type":     "operator",
+			ChanId:   "test-1",
+			RootNode: "1",
+			MapNode: map[string]*data.NodeRule{
+				"1": {
+					Debug: false,
+					Option: map[string]interface{}{
+						"operators": map[string]string{
+							"c": "a+b",
 						},
+						"next_error":   "2",
+						"next_success": "2",
 					},
-					"next_error":   "2",
-					"next_success": "2",
+					NodeId: "4",
+					RuleId: "arithmetic",
+					End:    false,
 				},
-				NodeId: "4",
-				RuleId: "arithmetic",
-				End:    false,
-			},
-			"2": {
-				Debug: false,
-				Option: map[string]interface{}{
-					"next_success": []string{"3", "4"},
-				},
-				NodeId: "2",
-				RuleId: "fork",
-				End:    false,
-			},
-			"3": {
-				Debug:  true,
-				Option: map[string]interface{}{},
-				NodeId: "3",
-				RuleId: "log-core",
-				End:    true,
-			},
-			"4": {
-				Debug: true,
-				Option: map[string]interface{}{
-					"operator": map[string]interface{}{
-						"right": map[string]interface{}{
-							"value": "default.a",
-							"type":  "val",
-						},
-						"left": map[string]interface{}{
-							"type":  "val",
-							"value": "default.b",
-						},
-						"operator": "<>",
-						"type":     "operator",
+				"2": {
+					Debug: false,
+					Option: map[string]interface{}{
+						"next_success": []string{"3", "4", "5"},
 					},
-					"set_param_result_to": "default.cond_a_b",
-					"next_error":          "2",
-					"next_true":           "",
-					"next_false":          "",
+					NodeId: "2",
+					RuleId: "fork",
+					End:    false,
 				},
-				NodeId: "4",
-				RuleId: "conditional",
-				End:    true,
+				"5": {
+					Debug:  true,
+					Option: map[string]interface{}{},
+					NodeId: "5",
+					RuleId: "output-redis-queue",
+					End:    true,
+				},
+				"3": {
+					Debug:  true,
+					Option: map[string]interface{}{},
+					NodeId: "3",
+					RuleId: "log-core",
+					End:    true,
+				},
+				"4": {
+					Debug: true,
+					Option: map[string]interface{}{
+						"conditional":         "a!=b",
+						"set_param_result_to": "cond_a_b",
+						"next_error":          "2",
+						"next_true":           "",
+						"next_false":          "",
+					},
+					NodeId: "4",
+					RuleId: "conditional",
+					End:    true,
+				},
 			},
-		},
-	}
+		}
 
-	dataBye, err := json.MarshalIndent(session, " ", "  ")
-	if err != nil {
-		log.Error(err)
-		return
-	}
+		dipper.Add(context.Background(), session)
 
-	err = client.RPush(context.Background(), "dipper-queue-session-input", dataBye).Err()
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
-	wg := sync.WaitGroup{}
-	wg.Add(1)
+		return nil
+	})
 
 	go func() {
 		for {
@@ -144,8 +127,10 @@ func main() {
 
 			fmt.Println("Result To Queue Output: ")
 			fmt.Println(string(dataResult))
-			wg.Done()
 		}
 	}()
-	wg.Wait()
+
+	if err := c.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
 }
