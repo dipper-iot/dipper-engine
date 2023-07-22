@@ -18,7 +18,7 @@ func (d *DipperEngine) Start() error {
 	for name, rule := range d.mapRule {
 		option, ok := d.config.Rules[name]
 		if ok && option.Enable {
-			err := rule.Initialize(d.ctx, map[string]interface{}{})
+			err := rule.Initialize(d.ctx, option.Options)
 			if err != nil {
 				return err
 			}
