@@ -12,6 +12,7 @@ type InputEngine struct {
 	FromEngine string                 `json:"from_engine"`
 	ToEngine   string                 `json:"to_engine"`
 	Node       *NodeRule              `json:"node"`
+	MetaData   map[string]interface{} `json:"meta_data"`
 	Data       map[string]interface{} `json:"data"`
 	BranchMain string                 `json:"branch_main"`
 	Type       TypeOutputEngine       `json:"type"`
