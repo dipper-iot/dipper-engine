@@ -8,7 +8,7 @@ import (
 	"github.com/dipper-iot/dipper-engine/internal/lock"
 	"github.com/dipper-iot/dipper-engine/internal/lock/redis_lock"
 	"github.com/dipper-iot/dipper-engine/internal/util"
-	"github.com/go-redis/redis/v9"
+	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 	"time"
 )

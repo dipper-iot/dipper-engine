@@ -17,6 +17,7 @@ type OutputEngine struct {
 	ChanId     string                 `json:"chan_id"`
 	IdNode     string                 `json:"id_node"`
 	FromEngine string                 `json:"from_engine"`
+	MetaData   map[string]interface{} `json:"meta_data"`
 	Data       map[string]interface{} `json:"data"`
 	BranchMain string                 `json:"branch_main"`
 	Next       []string               `json:"next"`

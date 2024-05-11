@@ -15,6 +15,7 @@ type NodeRule struct {
 type Session struct {
 	ChanId   string                   `json:"chan_id"`
 	MapNode  map[string]*NodeRule     `json:"map_node"`
+	MetaData map[string]interface{}   `json:"meta_data"`
 	RootNode string                   `json:"root_node"`
 	Data     map[string]interface{}   `json:"data"`
 	Result   map[string]*OutputEngine `json:"result"`

@@ -2,7 +2,7 @@ package common
 
 import (
 	"context"
-	"github.com/go-redis/redis/v9"
+	"github.com/go-redis/redis/v8"
 )
 
 func ConnectRedis(ctx context.Context, option *OptionRedis) (client *redis.Client, err error) {
