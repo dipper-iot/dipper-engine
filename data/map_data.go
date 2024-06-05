@@ -22,6 +22,7 @@ func CreateOutput(input *InputEngine, id string) (output *OutputEngine) {
 	output.BranchMain = input.BranchMain
 	output.ChanId = input.ChanId
 	output.IdNode = input.IdNode
+	output.MetaData = input.MetaData
 	output.FromEngine = id
 	output.SessionId = input.SessionId
 	output.Time = &timeData

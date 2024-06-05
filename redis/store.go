@@ -40,7 +40,7 @@ func (r redisStore) Add(sessionInfo *data.Info) error {
 		return err
 	}
 
-	return r.client.Set(context.TODO(), key, data, r.timeout).Err()
+	return r.client.SetNX(context.TODO(), key, data, 0).Err()
 }
 
 func (r redisStore) Get(sessionId uint64) *data.Info {
@@ -53,9 +53,9 @@ func (r redisStore) Get(sessionId uint64) *data.Info {
 	}
 
 	var data data.Info
-	err = json.Unmarshal([]byte(dataStr), data)
+	err = json.Unmarshal([]byte(dataStr), &data)
 	if err != nil {
-		log.Error(err)
+		log.Error("Get json.Unmarshal => ", err)
 		return nil
 	}
 
@@ -71,9 +71,9 @@ func (r redisStore) Has(sessionId uint64) bool {
 		return false
 	}
 	var data data.Info
-	err = json.Unmarshal([]byte(dataStr), data)
+	err = json.Unmarshal([]byte(dataStr), &data)
 	if err != nil {
-		log.Error(err)
+		log.Error("Has json.Unmarshal => ", err)
 		return false
 	}
 

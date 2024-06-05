@@ -34,6 +34,7 @@ func (o OutputEngine) Clone() *OutputEngine {
 		IdNode:     o.IdNode,
 		FromEngine: o.FromEngine,
 		Data:       o.Data,
+		MetaData:   o.MetaData,
 		BranchMain: o.BranchMain,
 		Next:       o.Next,
 		Time:       o.Time,

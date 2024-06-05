@@ -13,6 +13,7 @@ type NodeRule struct {
 }
 
 type Session struct {
+	Id       uint64                   `json:"id"`
 	ChanId   string                   `json:"chan_id"`
 	MapNode  map[string]*NodeRule     `json:"map_node"`
 	MetaData map[string]interface{}   `json:"meta_data"`
@@ -22,10 +23,11 @@ type Session struct {
 }
 
 type ResultSession struct {
-	Id     uint64                   `json:"id"`
-	ChanId string                   `json:"chan_id"`
-	Data   map[string]interface{}   `json:"data"`
-	Result map[string]*OutputEngine `json:"result"`
+	Id       uint64                   `json:"id"`
+	ChanId   string                   `json:"chan_id"`
+	MetaData map[string]interface{}   `json:"meta_data"`
+	Data     map[string]interface{}   `json:"data"`
+	Result   map[string]*OutputEngine `json:"result"`
 }
 
 type Info struct {
@@ -36,6 +38,7 @@ type Info struct {
 	Infinite bool                     `json:"infinite"`
 	MapNode  map[string]*NodeRule     `json:"map_node"`
 	RootNode *NodeRule                `json:"root_node"`
+	MetaData map[string]interface{}   `json:"meta_data"`
 	Data     map[string]interface{}   `json:"data"`
 	Result   map[string]*OutputEngine `json:"result"`
 	EndCount int                      `json:"end_count"`
