@@ -12,16 +12,18 @@ import (
 func NewSessionInfo(timeout time.Duration, session *data.Session, mapRule map[string]Rule) *data.Info {
 	now := time.Now()
 	var (
-		id  uint64
+		id  uint64 = session.Id
 		err error
 	)
-	for {
-		id, err = util.NextID()
-		if err != nil {
-			log.Error(err)
-			continue
+	if id == 0 {
+		for {
+			id, err = util.NextID()
+			if err != nil {
+				log.Error(err)
+				continue
+			}
+			break
 		}
-		break
 	}
 
 	endCount := 0
@@ -68,7 +70,7 @@ func (d *DipperEngine) StartSession(ctx context.Context, sessionId uint64) error
 					Error:      nil,
 				})
 				if err != nil {
-					log.Error(err)
+					log.Error("Publish have error ", err)
 					return err
 				}
 			}

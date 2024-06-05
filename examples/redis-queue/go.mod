@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/dipper-iot/dipper-engine v0.0.0-20221022050351-f7e9b09096a6
-	github.com/go-redis/redis/v9 v9.0.0-rc.1
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/sirupsen/logrus v1.9.0
 	github.com/urfave/cli/v2 v2.11.2
 )

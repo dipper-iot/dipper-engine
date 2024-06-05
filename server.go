@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/dipper-iot/dipper-engine/engine"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 

@@ -80,6 +80,7 @@ func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.Outpu
 						SessionId:  sessionInfo.Id,
 						ChanId:     sessionInfo.ChanId,
 						IdNode:     nextId,
+						MetaData:   dataOutput.MetaData,
 						BranchMain: dataOutput.BranchMain,
 						FromEngine: node.RuleId,
 						ToEngine:   dataOutput.FromEngine,
