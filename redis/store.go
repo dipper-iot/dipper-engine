@@ -32,6 +32,10 @@ func (r redisStore) getKey(sessionId uint64) string {
 }
 
 func (r redisStore) Add(sessionInfo *data.Info) error {
+
+	if r.Has(sessionInfo.Id) {
+		r.delete(sessionInfo.Id)
+	}
 	key := r.getKey(sessionInfo.Id)
 
 	data, err := util.ConvertToByte(sessionInfo)

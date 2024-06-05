@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -211,6 +212,21 @@ func (q *Query) Number() (float64, error) {
 		if !ok {
 			return 0, fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
 		}
+		switch v := n.(type) {
+		case string:
+			s, err := strconv.ParseFloat(v, 64)
+			return s, err
+		case float64:
+			return v, nil
+		case float32:
+			return float64(v), nil
+		case int64:
+			return float64(v), nil
+		case int:
+			return float64(v), nil
+		default:
+		}
+
 		v := reflect.ValueOf(n)
 		if v.CanInt() {
 			v2 := v.Int()
@@ -236,6 +252,32 @@ func (q *Query) Number() (float64, error) {
 
 func (q *Query) String() (string, error) {
 	if q.dataString != "" {
+		return q.dataString, nil
+	}
+	if q.index > len(q.paths)-1 {
+		return "", fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
+	}
+	if q.Type() == Object {
+		name := q.paths[q.index]
+		data, err := q.object()
+		if err != nil {
+			return "", err
+		}
+		n, ok := data[name]
+		if !ok {
+			return "", fmt.Errorf("%s: %s", NotFoundPath, strings.Join(q.paths, "."))
+		}
+		switch v := n.(type) {
+		case string:
+			return v, nil
+		case float64, float32:
+			return fmt.Sprintf("%f", v), nil
+		case int, int64:
+			return fmt.Sprintf("%d", v), nil
+		default:
+		}
+		v := reflect.ValueOf(n)
+		q.dataString = v.String()
 		return q.dataString, nil
 	}
 	v := reflect.ValueOf(q.data)
