@@ -38,6 +38,11 @@ func NewSessionInfo(timeout time.Duration, session *data.Session, mapRule map[st
 		}
 	}
 
+	metaData := session.MetaData
+	if metaData == nil {
+		metaData = map[string]interface{}{}
+	}
+
 	return &data.Info{
 		Id:       id,
 		Time:     &now,
@@ -46,6 +51,7 @@ func NewSessionInfo(timeout time.Duration, session *data.Session, mapRule map[st
 		Timeout:  timeout,
 		MapNode:  session.MapNode,
 		EndCount: endCount,
+		MetaData: metaData,
 		RootNode: session.MapNode[session.RootNode],
 		Data:     session.Data,
 	}
