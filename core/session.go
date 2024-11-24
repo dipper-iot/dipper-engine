@@ -71,6 +71,7 @@ func (d *DipperEngine) StartSession(ctx context.Context, sessionId uint64) error
 					ToEngine:   "",
 					Node:       node,
 					Data:       sessionInfo.Data,
+					MetaData:   sessionInfo.MetaData,
 					Time:       sessionInfo.Time,
 					Type:       data.TypeOutputEngineSuccess,
 					Error:      nil,
