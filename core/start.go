@@ -95,7 +95,10 @@ func viewListRule(list []*viewRule) {
 		fmt.Fprintln(w, fmt.Sprintf("%d\t\t%s\t\t%d\t\t%s\t\t%s\t", index, rule.Name, rule.Worker, rule.Infinity, rule.Status))
 		index++
 	}
-	w.Flush()
+	err := w.Flush()
+	if err != nil {
+		log.Error(err)
+	}
 	fmt.Println("-----------------------------------------------------------")
 	fmt.Println()
 }

@@ -32,7 +32,10 @@ func (d *DipperEngine) publishBus(name string, dataOutput interface{}) {
 	if !ok {
 		topic = name
 	}
-	d.bus.Pushlish(context.TODO(), topic, dataOutput)
+	err := d.bus.Pushlish(context.TODO(), topic, dataOutput)
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func (d *DipperEngine) handlerOutput(ctx context.Context, dataOutput *data.OutputEngine) error {

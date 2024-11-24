@@ -89,7 +89,10 @@ func (d *DipperEngine) StartSession(ctx context.Context, sessionId uint64) error
 
 func (d *DipperEngine) Add(ctx context.Context, sessionData *data.Session) error {
 	sessionInfo := NewSessionInfo(time.Duration(d.config.TimeoutSession), sessionData, d.mapRule)
-	d.store.Add(sessionInfo)
+	err := d.store.Add(sessionInfo)
+	if err != nil {
+		return err
+	}
 	return d.StartSession(ctx, sessionInfo.Id)
 }
 
@@ -102,7 +105,7 @@ func (d *DipperEngine) SessionInputQueue(factoryQueueName FactoryQueueName[*data
 
 	d.queueInput = factoryQueueName(topic)
 
-	d.queueInput.Subscribe(context.TODO(), func(sessionDeliver *queue.Deliver[*data.Session]) {
+	err := d.queueInput.Subscribe(context.TODO(), func(sessionDeliver *queue.Deliver[*data.Session]) {
 		err := d.Add(context.TODO(), sessionDeliver.Data)
 		if err != nil {
 			sessionDeliver.Reject()
@@ -110,6 +113,9 @@ func (d *DipperEngine) SessionInputQueue(factoryQueueName FactoryQueueName[*data
 		}
 		sessionDeliver.Ack()
 	})
+	if err != nil {
+		return
+	}
 }
 
 func (d *DipperEngine) SessionOutputQueue(factoryQueueOutputName FactoryQueueName[*data.ResultSession]) {
@@ -122,5 +128,8 @@ func (d *DipperEngine) SessionOutputQueue(factoryQueueOutputName FactoryQueueNam
 }
 
 func (d *DipperEngine) OutputSubscribe(ctx context.Context, callback queue.SubscribeFunction[*data.ResultSession]) {
-	d.queueOutput.Subscribe(ctx, callback)
+	err := d.queueOutput.Subscribe(ctx, callback)
+	if err != nil {
+		log.Error(err)
+	}
 }
