@@ -24,13 +24,13 @@ func (d *DipperEngine) LoadPlugin() {
 			continue
 		}
 
-		plugin, ok := symPlugin.(PluginDipper)
+		pluginDipper, ok := symPlugin.(PluginDipper)
 		if !ok {
 			fmt.Printf("Load Plugin: %s unexpected type from module symbol \n", pluginName)
 			continue
 		}
 
-		rules := plugin.Rules()
+		rules := pluginDipper.Rules()
 
 		for _, rule := range rules {
 			d.mapRule[rule.Id()] = rule

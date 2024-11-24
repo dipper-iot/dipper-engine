@@ -2,7 +2,7 @@ package redis_lock
 
 import (
 	"context"
-	"github.com/go-redis/redis/v9"
+	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 	"time"
 )

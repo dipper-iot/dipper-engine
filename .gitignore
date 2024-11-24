@@ -3,4 +3,4 @@
 /dipper-engine
 /plugins/
 /coverage.out
-/examples/base/go.sum
+go.sum

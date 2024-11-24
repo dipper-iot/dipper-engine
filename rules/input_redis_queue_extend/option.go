@@ -3,7 +3,7 @@ package input_redis_queue_extend
 import (
 	"context"
 	"github.com/dipper-iot/dipper-engine/data"
-	"github.com/go-redis/redis/v9"
+	"github.com/go-redis/redis/v8"
 )
 
 type OptionSession struct {

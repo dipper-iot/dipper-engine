@@ -8,7 +8,7 @@ import (
 	"github.com/dipper-iot/dipper-engine/internal/lock"
 	"github.com/dipper-iot/dipper-engine/internal/lock/redis_lock"
 	"github.com/dipper-iot/dipper-engine/internal/util"
-	"github.com/go-redis/redis/v9"
+	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
@@ -32,6 +32,10 @@ func (r redisStore) getKey(sessionId uint64) string {
 }
 
 func (r redisStore) Add(sessionInfo *data.Info) error {
+
+	if r.Has(sessionInfo.Id) {
+		r.delete(sessionInfo.Id)
+	}
 	key := r.getKey(sessionInfo.Id)
 
 	data, err := util.ConvertToByte(sessionInfo)
@@ -40,7 +44,7 @@ func (r redisStore) Add(sessionInfo *data.Info) error {
 		return err
 	}
 
-	return r.client.Set(context.TODO(), key, data, r.timeout).Err()
+	return r.client.SetNX(context.TODO(), key, data, 0).Err()
 }
 
 func (r redisStore) Get(sessionId uint64) *data.Info {
@@ -53,9 +57,9 @@ func (r redisStore) Get(sessionId uint64) *data.Info {
 	}
 
 	var data data.Info
-	err = json.Unmarshal([]byte(dataStr), data)
+	err = json.Unmarshal([]byte(dataStr), &data)
 	if err != nil {
-		log.Error(err)
+		log.Error("Get json.Unmarshal => ", err)
 		return nil
 	}
 
@@ -71,9 +75,9 @@ func (r redisStore) Has(sessionId uint64) bool {
 		return false
 	}
 	var data data.Info
-	err = json.Unmarshal([]byte(dataStr), data)
+	err = json.Unmarshal([]byte(dataStr), &data)
 	if err != nil {
-		log.Error(err)
+		log.Error("Has json.Unmarshal => ", err)
 		return false
 	}
 

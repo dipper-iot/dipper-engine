@@ -7,7 +7,7 @@ import (
 	"github.com/dipper-iot/dipper-engine/internal/util"
 	rs "github.com/dipper-iot/dipper-engine/redis"
 	"github.com/dipper-iot/dipper-engine/store"
-	"github.com/go-redis/redis/v9"
+	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"time"

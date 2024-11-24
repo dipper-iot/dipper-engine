@@ -7,8 +7,8 @@ import (
 	"github.com/dipper-iot/dipper-engine/engine"
 	"github.com/dipper-iot/dipper-engine/internal/debug"
 	"github.com/dipper-iot/dipper-engine/queue"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
-	"log"
 	"os"
 )
 

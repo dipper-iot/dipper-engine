@@ -98,7 +98,7 @@ c.Hook(engine.AfterStart, func(dipper *core.DipperEngine, c *cli.Context) error 
     
     return dipper.Add(context.Background(), &data.Session{
         Data: map[string]interface{}{
-                "default": map[string]interface{}{
+            "default": map[string]interface{}{
                 "a": 10,
                 "b": 20,
                 "d": 5,

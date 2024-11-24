@@ -15,7 +15,7 @@ import (
 	log2 "github.com/dipper-iot/dipper-engine/rules/log"
 	_switch "github.com/dipper-iot/dipper-engine/rules/switch"
 	"github.com/dipper-iot/dipper-engine/store"
-	"github.com/go-redis/redis/v9"
+	"github.com/go-redis/redis/v8"
 	"log"
 	"sync"
 	"testing"

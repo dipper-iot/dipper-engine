@@ -3,7 +3,7 @@ package engine
 import (
 	"fmt"
 	"github.com/dipper-iot/dipper-engine/core"
-	"github.com/go-redis/redis/v9"
+	"github.com/go-redis/redis/v8"
 	"github.com/urfave/cli/v2"
 	"os"
 	"os/signal"

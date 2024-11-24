@@ -7,7 +7,6 @@ import (
 	"github.com/dipper-iot/dipper-engine/errors"
 	"github.com/dipper-iot/dipper-engine/queue"
 	"github.com/dipper-iot/dipper-engine/rules/common"
-	"github.com/go-redis/redis/v9"
 	log "github.com/sirupsen/logrus"
 )
 

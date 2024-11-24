@@ -12,16 +12,18 @@ import (
 func NewSessionInfo(timeout time.Duration, session *data.Session, mapRule map[string]Rule) *data.Info {
 	now := time.Now()
 	var (
-		id  uint64
+		id  uint64 = session.Id
 		err error
 	)
-	for {
-		id, err = util.NextID()
-		if err != nil {
-			log.Error(err)
-			continue
+	if id == 0 {
+		for {
+			id, err = util.NextID()
+			if err != nil {
+				log.Error(err)
+				continue
+			}
+			break
 		}
-		break
 	}
 
 	endCount := 0
@@ -36,6 +38,11 @@ func NewSessionInfo(timeout time.Duration, session *data.Session, mapRule map[st
 		}
 	}
 
+	metaData := session.MetaData
+	if metaData == nil {
+		metaData = map[string]interface{}{}
+	}
+
 	return &data.Info{
 		Id:       id,
 		Time:     &now,
@@ -44,6 +51,7 @@ func NewSessionInfo(timeout time.Duration, session *data.Session, mapRule map[st
 		Timeout:  timeout,
 		MapNode:  session.MapNode,
 		EndCount: endCount,
+		MetaData: metaData,
 		RootNode: session.MapNode[session.RootNode],
 		Data:     session.Data,
 	}
@@ -63,12 +71,13 @@ func (d *DipperEngine) StartSession(ctx context.Context, sessionId uint64) error
 					ToEngine:   "",
 					Node:       node,
 					Data:       sessionInfo.Data,
+					MetaData:   sessionInfo.MetaData,
 					Time:       sessionInfo.Time,
 					Type:       data.TypeOutputEngineSuccess,
 					Error:      nil,
 				})
 				if err != nil {
-					log.Error(err)
+					log.Error("Publish have error ", err)
 					return err
 				}
 			}
@@ -80,7 +89,10 @@ func (d *DipperEngine) StartSession(ctx context.Context, sessionId uint64) error
 
 func (d *DipperEngine) Add(ctx context.Context, sessionData *data.Session) error {
 	sessionInfo := NewSessionInfo(time.Duration(d.config.TimeoutSession), sessionData, d.mapRule)
-	d.store.Add(sessionInfo)
+	err := d.store.Add(sessionInfo)
+	if err != nil {
+		return err
+	}
 	return d.StartSession(ctx, sessionInfo.Id)
 }
 
@@ -93,7 +105,7 @@ func (d *DipperEngine) SessionInputQueue(factoryQueueName FactoryQueueName[*data
 
 	d.queueInput = factoryQueueName(topic)
 
-	d.queueInput.Subscribe(context.TODO(), func(sessionDeliver *queue.Deliver[*data.Session]) {
+	err := d.queueInput.Subscribe(context.TODO(), func(sessionDeliver *queue.Deliver[*data.Session]) {
 		err := d.Add(context.TODO(), sessionDeliver.Data)
 		if err != nil {
 			sessionDeliver.Reject()
@@ -101,6 +113,9 @@ func (d *DipperEngine) SessionInputQueue(factoryQueueName FactoryQueueName[*data
 		}
 		sessionDeliver.Ack()
 	})
+	if err != nil {
+		return
+	}
 }
 
 func (d *DipperEngine) SessionOutputQueue(factoryQueueOutputName FactoryQueueName[*data.ResultSession]) {
@@ -113,5 +128,8 @@ func (d *DipperEngine) SessionOutputQueue(factoryQueueOutputName FactoryQueueNam
 }
 
 func (d *DipperEngine) OutputSubscribe(ctx context.Context, callback queue.SubscribeFunction[*data.ResultSession]) {
-	d.queueOutput.Subscribe(ctx, callback)
+	err := d.queueOutput.Subscribe(ctx, callback)
+	if err != nil {
+		log.Error(err)
+	}
 }
